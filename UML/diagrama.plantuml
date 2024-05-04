@@ -1,0 +1,167 @@
+@startuml TPO
+
+abstract class Usuario{
+    - nombre: String
+    - apellido: String
+    - sexo: String
+    - dni: String
+    - email: String
+    - numTelefono: String
+    - imgPerfil: String
+    ''Nombre del archivo, planificar ubicar la imagen en un servidor publico'
+}
+
+
+class UsuarioGuia extends Usuario{
+    - listaCiudadActivo: Set<CiudadPais>
+    - listaServicios: Set<ServicioGuia>
+
+    + agregarServicio(ServicioGuia)
+    + eliminarServicio(ServicioGuia)
+}
+UsuarioGuia *--> ServicioGuia
+UsuarioGuia *-> CiudadPais
+
+class UsuarioTurista extends Usuario{
+}
+
+abstract class ServicioGuia{
+    - nombre: String
+    - descripcion: String
+}
+
+abstract class Tour extends ServicioGuia{
+
+    - ciudad: Ciudad
+
+}
+
+class TourIndividual extends Tour{}
+class TourGrupal extends Tour{
+    - cantPersonas: int
+}
+
+class Traduccion extends ServicioGuia{
+    - idiomaOriginal: Idioma
+    - idiomaDestino: Idioma
+}
+
+Traduccion *--> Idioma
+
+enum CiudadPais{
+    BUENOSAIRES_ARGENTINA
+    CORDOBA_ARGENTINA
+    BARILOCHE_ARGENTINA
+    MADRID_ESPAña
+    ETC...,
+}
+
+enum Idioma{
+    ESPANOL
+    INGLES
+    FRANCES
+    ITALIANO
+    ALEMAN
+    GUARANI
+    ETC...
+}
+
+
+
+class ControladorRegistro{
+
+    - metodoRegistro: IMetodoRegistroAdapter
+    - verificacionGuia: IVerificacionGuia
+
+    + registro(RegistroDTO) ''POST
+    + verificarGuia()
+}
+
+ControladorRegistro *--> IVerificacionGuia
+ControladorRegistro *-> IMetodoRegistroAdapter
+
+
+interface IMetodoRegistroAdapter{
+
+    + registrar()
+}
+
+class AdapterRegistroGoogle implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroGoogle
+}
+AdapterRegistroGoogle *--> AdaptadaRegistroGoogle
+
+class AdapterRegistroApple implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroApple
+}
+AdapterRegistroApple *--> AdaptadaRegistroApple
+class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroFacebook
+}
+AdapterRegistroFacebook *--> AdaptadaRegistroFacebook
+
+class AdaptadaRegistroGoogle{
+    +registroReal()
+}
+
+class AdaptadaRegistroApple {
+    +registroReal()
+}
+
+class AdaptadaRegistroFacebook{
+    +registroReal()
+}
+
+
+interface IVerificacionGuia{
+    + verificar()
+}
+
+class VerificacionIA implements IVerificacionGuia{
+    - apiConcreta: AdaptadaVerificacionIA
+
+    + verificar()
+}
+
+VerificacionIA *--> AdaptadaVerificacionIA
+
+class AdaptadaVerificacionIA{
+    + verificar()
+}
+
+'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
+class ControladorBusqueda{
+    + buscarGuia(GuiaDTO): GuiaDTO
+    + buscarGuias(FiltroDTO): List<UsuarioGuia>
+}
+
+class ControladorContratar{
+    + contratarTourGuia(ContratoTourDTO)
+    + contratarTraduccionGuia(ContratoTraduccionDTO)
+
+    + cancelarReserva(ReservaDTO)
+}
+
+class Review{
+    - usuarioTurista: UsuarioTurista
+    - usuarioGuia: UsuarioGuia
+    - servicioContratado: ServicioGuia
+    - calificacion: int 
+    ''del 1 al 10
+    - comentario: String
+}
+
+''No se donde poner esto por el momento :v
+''Sabemos que son diferentes API para los diferentes metoods, asique seguro nos va a estar pidiendo implentar patron Adapter
+interface INotificacion{
+    + notificar(UsuarioDestino, mensaje)
+}
+
+
+interface ISistemaPago{
+    + cobrar()
+    + transferir()
+    + depositar()
+}
+
+@enduml
