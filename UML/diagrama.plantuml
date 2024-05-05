@@ -20,20 +20,20 @@ class UsuarioGuia extends Usuario{
     + eliminarServicio(ServicioGuia)
 }
 UsuarioGuia *--> ServicioGuia
-UsuarioGuia *-> CiudadPais
+UsuarioGuia o-> CiudadPais
 
 class UsuarioTurista extends Usuario{
 }
 
 abstract class ServicioGuia{
+    - precio: double
+    ''ver como aplica en las traducciones, si cobra tarifa por hora/dia/archivo/precio base
     - nombre: String
     - descripcion: String
 }
 
 abstract class Tour extends ServicioGuia{
-
     - ciudad: Ciudad
-
 }
 
 class TourIndividual extends Tour{}
@@ -48,14 +48,6 @@ class Traduccion extends ServicioGuia{
 
 Traduccion *--> Idioma
 
-enum CiudadPais{
-    BUENOSAIRES_ARGENTINA
-    CORDOBA_ARGENTINA
-    BARILOCHE_ARGENTINA
-    MADRID_ESPAña
-    ETC...,
-}
-
 enum Idioma{
     ESPANOL
     INGLES
@@ -67,75 +59,101 @@ enum Idioma{
 }
 
 
-
-class ControladorRegistro{
-
-    - metodoRegistro: IMetodoRegistroAdapter
-    - verificacionGuia: IVerificacionGuia
-
-    + registro(RegistroDTO) ''POST
-    + verificarGuia()
+class ControladorIA{
+    ''PREGUNTAR AL PROFE!!!
+    + confirmarVerificacion(EstadoVerificacionDTO)
+    - enviarPush(EstadoVerificacionDTO)
+    ''Cola de mensajes, no sabemos etapa de tiempo
 }
 
-ControladorRegistro *--> IVerificacionGuia
-ControladorRegistro *-> IMetodoRegistroAdapter
+class EstadoVerificacionDTO{
+    - email: String
+    - estado: Boolean
+}
+
+''Ver capa de servicios, si lo implementamos ahora 
+
+class ServicioRegistro{
+    - verificacionGuia: IVerificacionGuia
+
+    + registrar(RegistroDTO)
+    + verificarGuia(RegistroDTO)
+}
+
+''Ver si los contraladores usamos singleton
+class ControladorRegistro{
+    - servicioRegistro: ServicioRegistro
+
+    + registro(RegistroDTO) ''POST
+}
+ServicioRegistro ..> IVerificacionGuia
+ServicioRegistro ..> IMetodoRegistroAdapter
+ControladorRegistro *-> ServicioRegistro
 
 
 interface IMetodoRegistroAdapter{
 
-    + registrar()
+    + registrar(RegistroDTO)
 }
 
 class AdapterRegistroGoogle implements IMetodoRegistroAdapter{
     - adaptada: AdaptadaRegistroGoogle
 }
-AdapterRegistroGoogle *--> AdaptadaRegistroGoogle
-
 class AdapterRegistroApple implements IMetodoRegistroAdapter{
     - adaptada: AdaptadaRegistroApple
 }
-AdapterRegistroApple *--> AdaptadaRegistroApple
 class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
     - adaptada: AdaptadaRegistroFacebook
 }
-AdapterRegistroFacebook *--> AdaptadaRegistroFacebook
 
-class AdaptadaRegistroGoogle{
-    +registroReal()
+class RegistroDTO{
+    ''Ver con el profe, tiene sentido meter todo en un solo DTO? Dejamos la responsabilidad de tomar los campos que valen en la implementacion concreta del adapter?
+    ''En el caso de Guia, la verificacion, los datos de imagen y num de certificado, lo agregamos a este dto o lo separamos?
+    - email: String
+    - passwd: String
+    - apiServicio: String
+    - tipoUsuario: TipoUsuario
+    - acreditacion: String
+    - imgCredencial: String
 }
 
-class AdaptadaRegistroApple {
-    +registroReal()
+enum TipoUsuario{
+    GUIA
+    TURISTA
 }
 
-class AdaptadaRegistroFacebook{
-    +registroReal()
-}
+ControladorRegistro o--> RegistroDTO
+
 
 
 interface IVerificacionGuia{
-    + verificar()
+    + verificar(VerificaGuiaDTO)
 }
 
 class VerificacionIA implements IVerificacionGuia{
     - apiConcreta: AdaptadaVerificacionIA
 
-    + verificar()
+    + verificar(VerificaGuiaDTO)
 }
 
-VerificacionIA *--> AdaptadaVerificacionIA
 
-class AdaptadaVerificacionIA{
-    + verificar()
-}
 
 'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
-class ControladorBusqueda{
-    + buscarGuia(GuiaDTO): GuiaDTO
+class ControladorGuia{
+    + buscarGuia(long): GuiaDTO
     + buscarGuias(FiltroDTO): List<UsuarioGuia>
 }
 
-class ControladorContratar{
+ControladorGuia o-> FiltroDTO
+class FiltroDTO{
+    - paisCiudad: List<CiudadPais>
+    - nombre: String
+    - apellido: String
+    - idiomas: List<Idioma>
+    - servicios: List<Servicio>
+    - puntacion: int
+}
+class ControladorContrato{
     + contratarTourGuia(ContratoTourDTO)
     + contratarTraduccionGuia(ContratoTraduccionDTO)
 
@@ -163,5 +181,47 @@ interface ISistemaPago{
     + transferir()
     + depositar()
 }
+
+
+class CiudadPais{
+    - id: long
+    - ciudad: String
+    - pais: String
+}
+
+
+class Contrato{
+    - servicio: Servicio
+    - usuarioContratante: UsuarioTurista
+    - usuarioContratado: UsuarioGuia
+    - fechaIni: Date
+    - fechaFin: Date
+    - importe: Double
+    - estado: IStateContrato
+
+
+    - cambiarEstado(IStateContrato)
+}
+
+
+interface IStateContrato{
+    + pagar(Contrato)
+    + cancelar(Contrato)
+    + aprobar(Contrato)
+    + realizarReserva(Contrato)
+}
+
+class StateContratoReserva implements IStateContrato{}
+class StateContratoAceptado implements IStateContrato{}
+class StateContratoConcluido implements IStateContrato{}
+class StateContratoCancelado implements IStateContrato{}
+
+Contrato o-> IStateContrato
+ControladorContrato ..> Contrato
+
+StateContratoReserva ..> StateContratoCancelado
+StateContratoReserva ..> StateContratoAceptado
+StateContratoAceptado ..> StateContratoConcluido
+StateContratoAceptado ..> StateContratoCancelado
 
 @enduml
