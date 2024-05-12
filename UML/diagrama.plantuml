@@ -1,5 +1,8 @@
 @startuml TPO
 
+
+''**********************************************CAPA ENTIDADES**********************************************
+
 abstract class Usuario{
     - nombre: String
     - apellido: String
@@ -11,176 +14,42 @@ abstract class Usuario{
     ''Nombre del archivo, planificar ubicar la imagen en un servidor publico'
 }
 
-
 class UsuarioGuia extends Usuario{
     - listaCiudadActivo: Set<CiudadPais>
-    - listaServicios: Set<ServicioGuia>
+    - listaServicios: Set<ServicioUsuarioGuia>
 
-    + agregarServicio(ServicioGuia)
-    + eliminarServicio(ServicioGuia)
+    + agregarServicio(ServicioUsuarioGuia)
+    + eliminarServicio(ServicioUsuarioGuia)
 }
-UsuarioGuia *--> ServicioGuia
+UsuarioGuia *--> ServicioUsuarioGuia
 UsuarioGuia o-> CiudadPais
 
 class UsuarioTurista extends Usuario{
 }
 
-abstract class ServicioGuia{
+abstract class ServicioUsuarioGuia{
     - precio: double
     ''ver como aplica en las traducciones, si cobra tarifa por hora/dia/archivo/precio base
     - nombre: String
     - descripcion: String
 }
 
-abstract class Tour extends ServicioGuia{
+abstract class Tour extends ServicioUsuarioGuia{
     - ciudad: Ciudad
 }
 
 class TourIndividual extends Tour{}
+
 class TourGrupal extends Tour{
     - cantPersonas: int
 }
 
-class Traduccion extends ServicioGuia{
+class Traduccion extends ServicioUsuarioGuia{
     - idiomaOriginal: Idioma
     - idiomaDestino: Idioma
 }
 
 Traduccion *--> Idioma
-
-enum Idioma{
-    ESPANOL
-    INGLES
-    FRANCES
-    ITALIANO
-    ALEMAN
-    GUARANI
-    ETC...
-}
-
-
-class ControladorIA{
-    ''PREGUNTAR AL PROFE!!!
-    + confirmarVerificacion(EstadoVerificacionDTO)
-    - enviarPush(EstadoVerificacionDTO)
-    ''Cola de mensajes, no sabemos etapa de tiempo
-}
-
-class EstadoVerificacionDTO{
-    - email: String
-    - estado: Boolean
-}
-
-''Ver capa de servicios, si lo implementamos ahora 
-
-class ServicioRegistro{
-    - verificacionGuia: IVerificacionGuia
-
-    + registrar(RegistroDTO)
-    + verificarGuia(RegistroDTO)
-}
-
-''Ver si los contraladores usamos singleton
-class ControladorRegistro{
-    - servicioRegistro: ServicioRegistro
-
-    + registro(RegistroDTO) ''POST
-}
-ServicioRegistro ..> IVerificacionGuia
-ServicioRegistro ..> IMetodoRegistroAdapter
-ControladorRegistro *-> ServicioRegistro
-
-
-interface IMetodoRegistroAdapter{
-
-    + registrar(RegistroDTO)
-}
-
-class AdapterRegistroGoogle implements IMetodoRegistroAdapter{
-    - adaptada: AdaptadaRegistroGoogle
-}
-class AdapterRegistroApple implements IMetodoRegistroAdapter{
-    - adaptada: AdaptadaRegistroApple
-}
-class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
-    - adaptada: AdaptadaRegistroFacebook
-}
-
-class RegistroDTO{
-    ''Ver con el profe, tiene sentido meter todo en un solo DTO? Dejamos la responsabilidad de tomar los campos que valen en la implementacion concreta del adapter?
-    ''En el caso de Guia, la verificacion, los datos de imagen y num de certificado, lo agregamos a este dto o lo separamos?
-    - email: String
-    - passwd: String
-    - apiServicio: String
-    - tipoUsuario: TipoUsuario
-    - acreditacion: String
-    - imgCredencial: String
-}
-
-enum TipoUsuario{
-    GUIA
-    TURISTA
-}
-
-ControladorRegistro o--> RegistroDTO
-
-
-
-interface IVerificacionGuia{
-    + verificar(VerificaGuiaDTO)
-}
-
-class VerificacionIA implements IVerificacionGuia{
-    - apiConcreta: AdaptadaVerificacionIA
-
-    + verificar(VerificaGuiaDTO)
-}
-
-
-
-'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
-class ControladorGuia{
-    + buscarGuia(long): GuiaDTO
-    + buscarGuias(FiltroDTO): List<UsuarioGuia>
-}
-
-ControladorGuia o-> FiltroDTO
-class FiltroDTO{
-    - paisCiudad: List<CiudadPais>
-    - nombre: String
-    - apellido: String
-    - idiomas: List<Idioma>
-    - servicios: List<Servicio>
-    - puntacion: int
-}
-class ControladorContrato{
-    + contratarTourGuia(ContratoTourDTO)
-    + contratarTraduccionGuia(ContratoTraduccionDTO)
-
-    + cancelarReserva(ReservaDTO)
-}
-
-class Review{
-    - usuarioTurista: UsuarioTurista
-    - usuarioGuia: UsuarioGuia
-    - servicioContratado: ServicioGuia
-    - calificacion: int 
-    ''del 1 al 10
-    - comentario: String
-}
-
-''No se donde poner esto por el momento :v
-''Sabemos que son diferentes API para los diferentes metoods, asique seguro nos va a estar pidiendo implentar patron Adapter
-interface INotificacion{
-    + notificar(UsuarioDestino, mensaje)
-}
-
-
-interface ISistemaPago{
-    + cobrar()
-    + transferir()
-    + depositar()
-}
 
 
 class CiudadPais{
@@ -203,7 +72,24 @@ class Contrato{
     - cambiarEstado(IStateContrato)
 }
 
+class Review{
+    - usuarioTurista: UsuarioTurista
+    - usuarioGuia: UsuarioGuia
+    - servicioContratado: ServicioUsuarioGuia
+    - calificacion: int 
+    ''del 1 al 10
+    - comentario: String
+}
 
+interface INotificacion{
+    + notificar(UsuarioDestino, mensaje)
+}
+
+interface ISistemaPago{
+    + cobrar()
+    + transferir()
+    + depositar()
+}
 interface IStateContrato{
     + pagar(Contrato)
     + cancelar(Contrato)
@@ -216,6 +102,91 @@ class StateContratoAceptado implements IStateContrato{}
 class StateContratoConcluido implements IStateContrato{}
 class StateContratoCancelado implements IStateContrato{}
 
+
+''**********************************************CAPA ENUMS**********************************************
+
+enum Idioma{
+    ESPANOL
+    INGLES
+    FRANCES
+    ITALIANO
+    ALEMAN
+    GUARANI
+    ETC...
+}
+
+enum TipoUsuario{
+    GUIA
+    TURISTA
+}
+
+
+''**********************************************CAPA DTO**********************************************
+
+class EstadoVerificacionDTO{
+    - email: String
+    - estado: Boolean
+}
+
+class RegistroDTO{
+    ''Ver con el profe, tiene sentido meter todo en un solo DTO? Dejamos la responsabilidad de tomar los campos que valen en la implementacion concreta del adapter?
+    ''En el caso de Guia, la verificacion, los datos de imagen y num de certificado, lo agregamos a este dto o lo separamos?
+    - email: String
+    - passwd: String
+    - apiServicio: String
+    - tipoUsuario: TipoUsuario
+    - acreditacion: String
+    - imgCredencial: String
+}
+
+class FiltroDTO{
+    - paisCiudad: List<CiudadPais>
+    - nombre: String
+    - apellido: String
+    - idiomas: List<Idioma>
+    - servicios: List<Servicio>
+    - puntacion: int
+}
+
+ServicioRegistro ..> IVerificacionGuia
+ServicioRegistro ..> IMetodoRegistroAdapter
+ControladorRegistro *-> ServicioRegistro
+
+
+interface IMetodoRegistroAdapter{
+
+    + registrar(RegistroDTO)
+}
+
+class AdapterRegistroGoogle implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroGoogle
+}
+class AdapterRegistroApple implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroApple
+}
+class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
+    - adaptada: AdaptadaRegistroFacebook
+}
+
+
+ControladorRegistro o--> RegistroDTO
+
+
+interface IVerificacionGuia{
+    + verificar(VerificaGuiaDTO)
+}
+
+class VerificacionIA implements IVerificacionGuia{
+    - apiConcreta: AdaptadaVerificacionIA
+
+    + verificar(VerificaGuiaDTO)
+}
+
+
+''No se donde poner esto por el momento :v
+''Sabemos que son diferentes API para los diferentes metoods, asique seguro nos va a estar pidiendo implentar patron Adapter
+
+
 Contrato o-> IStateContrato
 ControladorContrato ..> Contrato
 
@@ -223,5 +194,118 @@ StateContratoReserva ..> StateContratoCancelado
 StateContratoReserva ..> StateContratoAceptado
 StateContratoAceptado ..> StateContratoConcluido
 StateContratoAceptado ..> StateContratoCancelado
+
+''**********************************************CAPA REPOSITORIOS**********************************************
+
+interface IRepository{
+    + save(A)
+    + update(A)
+    + delete(long)
+    + get(long)
+}
+
+class RepositoryUsuarioGuia implements IRepository{
+
+}
+
+class RepositoryUsuarioTurista implements IRepository{
+
+}
+
+class RepositoryContrato implements IRepository{
+
+}
+
+class RepositoryCiudadPais implements IRepository{
+
+}
+
+class RepositoryTraduccion implements IRepository{
+
+}
+
+class RepositoryServicioUsuarioGuia implements IRepository{
+
+}
+
+class RepositoryReview implements IRepository{
+
+}
+
+class RepositoryPago implements IRepository{
+
+}
+
+
+''**********************************************CAPA CONTROLADOR**********************************************
+class ControladorContrato{
+    + contratarTourGuia(ContratoTourDTO)
+    + contratarTraduccionGuia(ContratoTraduccionDTO)
+
+    + cancelarReserva(ReservaDTO)
+}
+'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
+class ControladorUsuarioGuia{
+    - servicioUsuarioGuia: ServicioUsuarioGuia
+    + buscarGuia(long): GuiaDTO
+    + buscarGuias(FiltroDTO): List<UsuarioGuia>
+}
+
+ControladorUsuarioGuia o-> FiltroDTO
+
+''Ver si los contraladores usamos singleton
+class ControladorRegistro{
+    - servicioRegistro: ServicioRegistro
+
+    + registro(RegistroDTO) ''POST
+}
+ControladorRegistro o-> ServicioRegistro
+
+class ControladorIA{
+    ''PREGUNTAR AL PROFE!!!
+    + confirmarVerificacion(EstadoVerificacionDTO)
+    - enviarPush(EstadoVerificacionDTO)
+    ''Cola de mensajes, no sabemos etapa de tiempo
+}
+
+class ControladorPago{
+    - servicioPago: ServicioPago
+}
+
+ControladorPago o-> ServicioPago
+
+
+
+''**********************************************CAPA SERVICIOS**********************************************
+class ServicioRegistro{
+    - verificacionGuia: IVerificacionGuia
+
+    + registrar(RegistroDTO)
+    + verificarGuia(RegistroDTO)
+}
+
+class ServicioUsuarioGuia{
+
+}
+
+class ServicioRegistro{
+
+}
+
+class ServicioUsuarioTurista{
+
+}
+
+class ServicioContrato{
+
+}
+
+class ServicioServicio{
+}
+
+class ServicioPago{
+
+}
+
 
 @enduml
