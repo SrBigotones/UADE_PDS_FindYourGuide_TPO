@@ -17,6 +17,8 @@ abstract class Usuario{
 class UsuarioGuia extends Usuario{
     - listaCiudadActivo: Set<CiudadPais>
     - listaServicios: Set<ServicioGuia>
+    - imgCredencial: String
+    - puntuacion: int
 
     + agregarServicio(ServicioGuia)
     + eliminarServicio(ServicioGuia)
@@ -36,12 +38,12 @@ abstract class ServicioGuia{
 
 abstract class Tour extends ServicioGuia{
     - ciudad: Ciudad
+    - cantPersonas: int
 }
 
 class TourIndividual extends Tour{}
 
 class TourGrupal extends Tour{
-    - cantPersonas: int
 }
 
 class Traduccion extends ServicioGuia{
@@ -59,7 +61,7 @@ class CiudadPais{
 
 
 class Contrato{
-    - servicio: Servicio
+    - servicio: ServicioGuia
     - usuarioContratante: UsuarioTurista
     - usuarioContratado: UsuarioGuia
     - fechaIni: Date
@@ -71,6 +73,7 @@ class Contrato{
     - cambiarEstado(IStateContrato)
 }
 Contrato o-> IStateContrato
+Contrato o-> ServicioGuia
 
 class Review{
     - usuarioTurista: UsuarioTurista
@@ -134,13 +137,19 @@ enum TipoUsuario{
     TURISTA
 }
 
+enum TipoServicio{
+    TOUR_INDIVIDUAL
+    TOUR_GRUPAL
+    TRADUCCION
+}
+
 
 ''**********************************************CAPA DTO**********************************************
 
-class EstadoVerificacionDTO{
+/'class EstadoVerificacionDTO{
     - email: String
     - estado: Boolean
-}
+}'/
 
 class RegistroDTO{
     - email: String
@@ -163,9 +172,9 @@ class FiltroDTO{
     - paisCiudad: List<CiudadPais>
     - nombre: String
     - apellido: String
-    - idiomas: List<Idioma>R
-    - servicios: List<Servicio>
-    - puntacion: int
+    - idiomas: List<Idioma>
+    - servicios: List<TipoServicio>
+    - puntuacion: int
 }
 
 ServicioRegistro *-> IVerificacionGuiaAdapter
@@ -178,6 +187,8 @@ enum EstrategiaRegistro {
     FACEBOOK
     + obtenerEstrategia(): IMetodoRegistroEstrategy
 }
+
+EstrategiaRegistro ..> IMetodoRegistroEstrategy
 
 interface IMetodoRegistroEstrategy{
     + registrar(Usuario): void 
@@ -198,7 +209,7 @@ class RegistroFacebookEstrategy implements IMetodoRegistroEstrategy{
 
 IMetodoRegistroEstrategy ..> Usuario
 
-ControladorRegistro o--> RegistroDTO
+ControladorRegistro ..> RegistroDTO
 
 
 interface IVerificacionGuiaAdapter{
@@ -208,7 +219,7 @@ interface IVerificacionGuiaAdapter{
 class VerificacionIA implements IVerificacionGuiaAdapter{
     - apiConcreta: AdaptadaVerificacionIA
 
-    + verificar(VerificarGuiaDTO)
+    + verificar(VerificarGuiaDTO): void
 }
 
 class VerificarGuiaDTO {
@@ -240,7 +251,9 @@ interface IRepository{
 }
 
 class RepositoryUsuarioGuia{
-
+    + buscarGuia(long): UsuarioGuia
+    + buscarGuias(List<Long>, String, String,
+         List<String>, List<String>, int)
 }
 RepositoryUsuarioGuia o--> UsuarioGuia
 
@@ -301,12 +314,12 @@ class ControladorUsuarioGuia{
     - servicioUsuarioGuia: ServicioUsuarioGuia
 
     + buscarGuia(long): GuiaDTO
-    + buscarGuias(FiltroDTO): List<UsuarioGuia>
+    + buscarGuias(FiltroDTO): List<GuiaDTO>
 }
 ControladorUsuarioGuia *-> ServicioUsuarioGuia
-ControladorUsuarioGuia o-> FiltroDTO
+ControladorUsuarioGuia ..> FiltroDTO
 ControladorUsuarioGuia o-> UsuarioGuia
-ControladorUsuarioGuia o-> GuiaDTO
+ControladorUsuarioGuia ..> GuiaDTO
 
 class ControladorRegistro{
     - servicioRegistro: ServicioRegistro
@@ -314,13 +327,14 @@ class ControladorRegistro{
     + registro(RegistroDTO) ''POST
 }
 
+/'
 class ControladorIA{
     ''PREGUNTAR AL PROFE!!!
     + confirmarVerificacion(EstadoVerificacionDTO)
     - enviarPush(EstadoVerificacionDTO)
     ''Cola de mensajes, no sabemos etapa de tiempo
 }
-ControladorIA o-> EstadoVerificacionDTO
+ControladorIA o-> EstadoVerificacionDTO'/
 
 class ControladorPago{
     - servicioPago: ServicioPago
@@ -342,26 +356,24 @@ ControladorReview *-> ServicioReview
 ControladorReview o-> ReviewDTO
 
 ''**********************************************CAPA SERVICIOS**********************************************
-class ServicioRegistro{
-    - verificacionGuia: IVerificacionGuiaAdapter
-
-    + registrar(RegistroDTO): void
-    - verificarGuia(RegistroDTO): void
-}
 
 class ServicioUsuarioGuia{
     - repositorioUsuarioGuia: RepositoryUsuarioGuia
+
+    + buscarGuia(long): UsuarioGuia
+    + buscarGuias(FiltroDTO): List<UsuarioGuia>
 }
-ServicioUsuarioGuia *-> RepositoryUsuarioGuia
+
+ServicioUsuarioGuia *--> RepositoryUsuarioGuia
 
 class ServicioRegistro{
     - repositorioUsuarioGuia: RepositoryUsuarioGuia
     - repositorioUsuarioTurista: RepositoryUsuarioTurista
     - verificacionGuia: IVerificacionGuiaAdapter
 
-    + registrarUsuarioGuia(RegistroDTO)
-    + registrarUsuarioTurista(RegistroDTO)
-    + verificarGuia(RegistroDTO)
+    - verificarGuia(RegistroDTO): void
+    + registrarUsuarioGuia(RegistroDTO): void
+    + registrarUsuarioTurista(RegistroDTO): void
 }
 ServicioRegistro *-> RepositoryUsuarioGuia
 ServicioRegistro *-> RepositoryUsuarioTurista
