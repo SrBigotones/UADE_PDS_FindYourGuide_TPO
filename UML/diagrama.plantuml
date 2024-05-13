@@ -48,7 +48,7 @@ class Traduccion extends ServicioGuia{
     - idiomaOriginal: Idioma
     - idiomaDestino: Idioma
 }
-Traduccion *--> Idioma
+Traduccion o-> Idioma
 
 
 class CiudadPais{
@@ -143,14 +143,19 @@ class EstadoVerificacionDTO{
 }
 
 class RegistroDTO{
-    ''Ver con el profe, tiene sentido meter todo en un solo DTO? Dejamos la responsabilidad de tomar los campos que valen en la implementacion concreta del adapter?
-    ''En el caso de Guia, la verificacion, los datos de imagen y num de certificado, lo agregamos a este dto o lo separamos?
     - email: String
     - passwd: String
     - apiServicio: String
     - tipoUsuario: TipoUsuario
     - acreditacion: String
     - imgCredencial: String
+    - nombre: String
+    - apellido: String
+    - sexo: String
+    - dni: String
+    - email: String
+    - numTelefono: String
+    ''Incluir foto de perfil? O se plantea para actualizarse una vez registrado?
 }
 RegistroDTO .. TipoUsuario
 
@@ -158,46 +163,71 @@ class FiltroDTO{
     - paisCiudad: List<CiudadPais>
     - nombre: String
     - apellido: String
-    - idiomas: List<Idioma>
+    - idiomas: List<Idioma>R
     - servicios: List<Servicio>
     - puntacion: int
 }
 
+ServicioRegistro *-> IVerificacionGuiaAdapter
+ControladorRegistro *-> ServicioRegistro
+ServicioRegistro ..> EstrategiaRegistro
 
-
-
-
-interface IMetodoRegistroAdapter{
-    + registrar(RegistroDTO)
+enum EstrategiaRegistro {
+    GOOGLE
+    APPLE
+    FACEBOOK
+    + obtenerEstrategia(): IMetodoRegistroEstrategy
 }
 
-class AdapterRegistroGoogle implements IMetodoRegistroAdapter{
+interface IMetodoRegistroEstrategy{
+    + registrar(Usuario): void 
+}
+
+class RegistroGoogleEstrategy implements IMetodoRegistroEstrategy{
     - adaptada: AdaptadaRegistroGoogle
+    + registrar(Usuario): void 
 }
-class AdapterRegistroApple implements IMetodoRegistroAdapter{
+class RegistroAppleEstrategy implements IMetodoRegistroEstrategy{
     - adaptada: AdaptadaRegistroApple
+    + registrar(Usuario): void 
 }
-class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
+class RegistroFacebookEstrategy implements IMetodoRegistroEstrategy{
     - adaptada: AdaptadaRegistroFacebook
+    + registrar(Usuario): void 
 }
 
+IMetodoRegistroEstrategy ..> Usuario
 
-interface IVerificacionGuia{
-    + verificar(VerificaGuiaDTO)
+ControladorRegistro o--> RegistroDTO
+
+
+interface IVerificacionGuiaAdapter{
+    + verificar(VerificarGuiaDTO): void
 }
 
-class VerificacionIA implements IVerificacionGuia{
+class VerificacionIA implements IVerificacionGuiaAdapter{
     - apiConcreta: AdaptadaVerificacionIA
 
-    + verificar(VerificaGuiaDTO)
+    + verificar(VerificarGuiaDTO)
 }
 
+class VerificarGuiaDTO {
+    - dni: String
+    - email: String
+    - acreditacion: String
+    - imgCredencial: String
+}
 
 ''No se donde poner esto por el momento :v
 ''Sabemos que son diferentes API para los diferentes metoods, asique seguro nos va a estar pidiendo implentar patron Adapter
 
 
 
+StateContratoReserva ..> StateContratoCancelado
+StateContratoReserva ..> StateContratoAceptado
+StateContratoAceptado ..> StateContratoConcluido
+StateContratoAceptado ..> StateContratoCancelado
+IVerificacionGuiaAdapter ..> VerificarGuiaDTO
 
 ''**********************************************CAPA REPOSITORIOS**********************************************
 
@@ -209,44 +239,44 @@ interface IRepository{
     + find(...String) 'query?
 }
 
-class RepositoryUsuarioGuia implements IRepository{
+class RepositoryUsuarioGuia{
 
 }
 RepositoryUsuarioGuia o--> UsuarioGuia
 
-class RepositoryUsuarioTurista implements IRepository{
+class RepositoryUsuarioTurista {
 
 }
 RepositoryUsuarioTurista o--> UsuarioTurista
 
-class RepositoryContrato implements IRepository{
+class RepositoryContrato {
 
 }
 RepositoryContrato o--> Contrato
 
-class RepositoryCiudadPais implements IRepository{
+class RepositoryCiudadPais {
 
 }
 RepositoryCiudadPais o--> CiudadPais
 
-class RepositoryTraduccion implements IRepository{
+class RepositoryTraduccion {
 
 }
 RepositoryTraduccion o--> Traduccion
 
-class RepositoryServicioGuia implements IRepository{
+class RepositoryServicioGuia {
 
 }
 RepositoryServicioGuia o--> ServicioGuia
 
 
-class RepositoryReview implements IRepository{
+class RepositoryReview {
 
 }
 RepositoryReview o--> Review
 
 
-class RepositoryPago implements IRepository{
+class RepositoryPago {
 
 }
 RepositoryPago o--> Pago
@@ -278,14 +308,11 @@ ControladorUsuarioGuia o-> FiltroDTO
 ControladorUsuarioGuia o-> UsuarioGuia
 ControladorUsuarioGuia o-> GuiaDTO
 
-''Ver si los contraladores usamos singleton
 class ControladorRegistro{
     - servicioRegistro: ServicioRegistro
 
     + registro(RegistroDTO) ''POST
 }
-ControladorRegistro *-> ServicioRegistro
-ControladorRegistro o-> RegistroDTO
 
 class ControladorIA{
     ''PREGUNTAR AL PROFE!!!
@@ -314,8 +341,13 @@ class ControladorReview{
 ControladorReview *-> ServicioReview
 ControladorReview o-> ReviewDTO
 
-
 ''**********************************************CAPA SERVICIOS**********************************************
+class ServicioRegistro{
+    - verificacionGuia: IVerificacionGuiaAdapter
+
+    + registrar(RegistroDTO): void
+    - verificarGuia(RegistroDTO): void
+}
 
 class ServicioUsuarioGuia{
     - repositorioUsuarioGuia: RepositoryUsuarioGuia
@@ -325,7 +357,7 @@ ServicioUsuarioGuia *-> RepositoryUsuarioGuia
 class ServicioRegistro{
     - repositorioUsuarioGuia: RepositoryUsuarioGuia
     - repositorioUsuarioTurista: RepositoryUsuarioTurista
-    - verificacionGuia: IVerificacionGuia
+    - verificacionGuia: IVerificacionGuiaAdapter
 
     + registrarUsuarioGuia(RegistroDTO)
     + registrarUsuarioTurista(RegistroDTO)
@@ -333,9 +365,8 @@ class ServicioRegistro{
 }
 ServicioRegistro *-> RepositoryUsuarioGuia
 ServicioRegistro *-> RepositoryUsuarioTurista
-ServicioRegistro o-> RegistroDTO
-ServicioRegistro ..> IVerificacionGuia
-ServicioRegistro ..> IMetodoRegistroAdapter
+ServicioRegistro ..> RegistroDTO
+ServicioRegistro ..> IMetodoRegistroEstrategy
 
 
 
