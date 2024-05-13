@@ -16,25 +16,25 @@ abstract class Usuario{
 
 class UsuarioGuia extends Usuario{
     - listaCiudadActivo: Set<CiudadPais>
-    - listaServicios: Set<ServicioUsuarioGuia>
+    - listaServicios: Set<ServicioGuia>
 
-    + agregarServicio(ServicioUsuarioGuia)
-    + eliminarServicio(ServicioUsuarioGuia)
+    + agregarServicio(ServicioGuia)
+    + eliminarServicio(ServicioGuia)
 }
-UsuarioGuia *--> ServicioUsuarioGuia
+UsuarioGuia *--> ServicioGuia
 UsuarioGuia o-> CiudadPais
 
 class UsuarioTurista extends Usuario{
 }
 
-abstract class ServicioUsuarioGuia{
+abstract class ServicioGuia{
     - precio: double
     ''ver como aplica en las traducciones, si cobra tarifa por hora/dia/archivo/precio base
     - nombre: String
     - descripcion: String
 }
 
-abstract class Tour extends ServicioUsuarioGuia{
+abstract class Tour extends ServicioGuia{
     - ciudad: Ciudad
 }
 
@@ -44,11 +44,10 @@ class TourGrupal extends Tour{
     - cantPersonas: int
 }
 
-class Traduccion extends ServicioUsuarioGuia{
+class Traduccion extends ServicioGuia{
     - idiomaOriginal: Idioma
     - idiomaDestino: Idioma
 }
-
 Traduccion *--> Idioma
 
 
@@ -71,15 +70,19 @@ class Contrato{
 
     - cambiarEstado(IStateContrato)
 }
+Contrato o-> IStateContrato
 
 class Review{
     - usuarioTurista: UsuarioTurista
     - usuarioGuia: UsuarioGuia
-    - servicioContratado: ServicioUsuarioGuia
+    - servicioContratado: ServicioGuia
     - calificacion: int 
     ''del 1 al 10
     - comentario: String
 }
+Review *-> UsuarioTurista
+Review *-> UsuarioGuia
+Review *-> ServicioGuia
 
 interface INotificacion{
     + notificar(UsuarioDestino, mensaje)
@@ -101,7 +104,18 @@ class StateContratoReserva implements IStateContrato{}
 class StateContratoAceptado implements IStateContrato{}
 class StateContratoConcluido implements IStateContrato{}
 class StateContratoCancelado implements IStateContrato{}
+StateContratoReserva ..> StateContratoCancelado
+StateContratoReserva ..> StateContratoAceptado
+StateContratoAceptado ..> StateContratoConcluido
+StateContratoAceptado ..> StateContratoCancelado
 
+
+class Pago{
+
+    - id: long
+    - monto: double
+    - estado: String
+}
 
 ''**********************************************CAPA ENUMS**********************************************
 
@@ -138,6 +152,7 @@ class RegistroDTO{
     - acreditacion: String
     - imgCredencial: String
 }
+RegistroDTO .. TipoUsuario
 
 class FiltroDTO{
     - paisCiudad: List<CiudadPais>
@@ -148,13 +163,11 @@ class FiltroDTO{
     - puntacion: int
 }
 
-ServicioRegistro ..> IVerificacionGuia
-ServicioRegistro ..> IMetodoRegistroAdapter
-ControladorRegistro *-> ServicioRegistro
+
+
 
 
 interface IMetodoRegistroAdapter{
-
     + registrar(RegistroDTO)
 }
 
@@ -167,9 +180,6 @@ class AdapterRegistroApple implements IMetodoRegistroAdapter{
 class AdapterRegistroFacebook implements IMetodoRegistroAdapter{
     - adaptada: AdaptadaRegistroFacebook
 }
-
-
-ControladorRegistro o--> RegistroDTO
 
 
 interface IVerificacionGuia{
@@ -187,13 +197,7 @@ class VerificacionIA implements IVerificacionGuia{
 ''Sabemos que son diferentes API para los diferentes metoods, asique seguro nos va a estar pidiendo implentar patron Adapter
 
 
-Contrato o-> IStateContrato
-ControladorContrato ..> Contrato
 
-StateContratoReserva ..> StateContratoCancelado
-StateContratoReserva ..> StateContratoAceptado
-StateContratoAceptado ..> StateContratoConcluido
-StateContratoAceptado ..> StateContratoCancelado
 
 ''**********************************************CAPA REPOSITORIOS**********************************************
 
@@ -202,56 +206,77 @@ interface IRepository{
     + update(A)
     + delete(long)
     + get(long)
+    + find(...String) 'query?
 }
 
 class RepositoryUsuarioGuia implements IRepository{
 
 }
+RepositoryUsuarioGuia o--> UsuarioGuia
 
 class RepositoryUsuarioTurista implements IRepository{
 
 }
+RepositoryUsuarioTurista o--> UsuarioTurista
 
 class RepositoryContrato implements IRepository{
 
 }
+RepositoryContrato o--> Contrato
 
 class RepositoryCiudadPais implements IRepository{
 
 }
+RepositoryCiudadPais o--> CiudadPais
 
 class RepositoryTraduccion implements IRepository{
 
 }
+RepositoryTraduccion o--> Traduccion
 
-class RepositoryServicioUsuarioGuia implements IRepository{
+class RepositoryServicioGuia implements IRepository{
 
 }
+RepositoryServicioGuia o--> ServicioGuia
+
 
 class RepositoryReview implements IRepository{
 
 }
+RepositoryReview o--> Review
+
 
 class RepositoryPago implements IRepository{
 
 }
+RepositoryPago o--> Pago
+
 
 
 ''**********************************************CAPA CONTROLADOR**********************************************
 class ControladorContrato{
+    - servicioContrato: ServicioContrato
+
     + contratarTourGuia(ContratoTourDTO)
     + contratarTraduccionGuia(ContratoTraduccionDTO)
-
-    + cancelarReserva(ReservaDTO)
+    + cancelarContrato(ReservaDTO)
 }
+ControladorContrato *-> ServicioContrato
+ControladorContrato o-> ContratoTraduccionDTO
+ControladorContrato o-> ReservaDTO
+
+
 'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
 class ControladorUsuarioGuia{
     - servicioUsuarioGuia: ServicioUsuarioGuia
+
     + buscarGuia(long): GuiaDTO
     + buscarGuias(FiltroDTO): List<UsuarioGuia>
 }
-
+ControladorUsuarioGuia *-> ServicioUsuarioGuia
 ControladorUsuarioGuia o-> FiltroDTO
+ControladorUsuarioGuia o-> UsuarioGuia
+ControladorUsuarioGuia o-> GuiaDTO
 
 ''Ver si los contraladores usamos singleton
 class ControladorRegistro{
@@ -259,7 +284,8 @@ class ControladorRegistro{
 
     + registro(RegistroDTO) ''POST
 }
-ControladorRegistro o-> ServicioRegistro
+ControladorRegistro *-> ServicioRegistro
+ControladorRegistro o-> RegistroDTO
 
 class ControladorIA{
     ''PREGUNTAR AL PROFE!!!
@@ -267,45 +293,96 @@ class ControladorIA{
     - enviarPush(EstadoVerificacionDTO)
     ''Cola de mensajes, no sabemos etapa de tiempo
 }
+ControladorIA o-> EstadoVerificacionDTO
 
 class ControladorPago{
     - servicioPago: ServicioPago
+
+    + pagar(PagoDTO)
+}
+ControladorPago *-> ServicioPago
+ControladorPago o-> PagoDTO
+
+class ControladorReview{
+    - servicioReview: ServicioReview
+
+    + obtenerReviews(): List<ReviewDTO>
+    + publicarReview(ReviewDTO): ReviewDTO
+    + modificarReview(long, ReviewDTO): ReviewDTO
 }
 
-ControladorPago o-> ServicioPago
-
+ControladorReview *-> ServicioReview
+ControladorReview o-> ReviewDTO
 
 
 ''**********************************************CAPA SERVICIOS**********************************************
-class ServicioRegistro{
-    - verificacionGuia: IVerificacionGuia
-
-    + registrar(RegistroDTO)
-    + verificarGuia(RegistroDTO)
-}
 
 class ServicioUsuarioGuia{
-
+    - repositorioUsuarioGuia: RepositoryUsuarioGuia
 }
+ServicioUsuarioGuia *-> RepositoryUsuarioGuia
 
 class ServicioRegistro{
+    - repositorioUsuarioGuia: RepositoryUsuarioGuia
+    - repositorioUsuarioTurista: RepositoryUsuarioTurista
+    - verificacionGuia: IVerificacionGuia
 
+    + registrarUsuarioGuia(RegistroDTO)
+    + registrarUsuarioTurista(RegistroDTO)
+    + verificarGuia(RegistroDTO)
 }
+ServicioRegistro *-> RepositoryUsuarioGuia
+ServicioRegistro *-> RepositoryUsuarioTurista
+ServicioRegistro o-> RegistroDTO
+ServicioRegistro ..> IVerificacionGuia
+ServicioRegistro ..> IMetodoRegistroAdapter
+
+
 
 class ServicioUsuarioTurista{
+    - repositorioUsuarioTurista: RepositoryUsuarioTurista
 
+    + modificarPerfil(long, UsuarioDTO): UsuarioDTO
 }
+ServicioUsuarioTurista *-> RepositoryUsuarioTurista
+ServicioUsuarioTurista o-> UsuarioDTO
 
 class ServicioContrato{
+    - repositorioContrato: RepositoryContrato
 
+    + contratar(UsuarioTurista, UsuarioGuia, Servicio): ContratoDTO
+    + confirmarContrato(UsuarioTurista, Contrato)
+    + cancelarContrato(Contrato)
 }
+ServicioContrato *-> RepositoryContrato
 
 class ServicioServicio{
+    - repositorioServicio: RepositoryServicioGuia
+
+    + agregarServicio(UsuarioGuia, ServicioDTO): ServicioDTO
 }
+ServicioServicio *-> RepositoryServicioGuia
 
 class ServicioPago{
+    - repositorioPago: RepositoryPago
+    - sistemaPago: ISistemaPago
 
+    + pagar(long,double, double) 
+    'idUsuarioPaga, Monto, codigo de pago
+    + devolver()
+    + multar(long, double)
+    'idUsuario, Monto
 }
+ServicioPago *-> RepositoryPago
+ServicioPago *-> ISistemaPago
 
+class ServicioReview{
+    - repositorioReview: RepositoryReview
+
+    + agregarReview()
+    + actualizarReview()
+    + eliminarReview()
+}
+ServicioReview *-> RepositoryReview
 
 @enduml
