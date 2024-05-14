@@ -91,6 +91,11 @@ interface INotificacion{
     + notificar(UsuarioDestino, mensaje)
 }
 
+class NotificationSender implements INotificacion{
+
+}
+
+
 interface ISistemaPago{
     + cobrar()
     + transferir()
@@ -176,6 +181,8 @@ class FiltroDTO{
     - servicios: List<TipoServicio>
     - puntuacion: int
 }
+FiltroDTO ..> TipoServicio
+
 
 ServicioRegistro *-> IVerificacionGuiaAdapter
 ControladorRegistro *-> ServicioRegistro
@@ -308,6 +315,13 @@ ControladorContrato *-> ServicioContrato
 ControladorContrato o-> ContratoTraduccionDTO
 ControladorContrato o-> ReservaDTO
 
+class ControladorUsuarioTurista{
+    - servicioTurista: ServicioUsuarioTurista
+
+    + actualizar(TuristaDTO): TuristaDTO
+}
+ControladorUsuarioTurista *-> ServicioUsuarioTurista
+
 
 'Estos metodos capas tiene mas sentido meterlos todo en un solo controlador por ejemplo: ControladorUsuarioTurista
 class ControladorUsuarioGuia{
@@ -315,6 +329,7 @@ class ControladorUsuarioGuia{
 
     + buscarGuia(long): GuiaDTO
     + buscarGuias(FiltroDTO): List<GuiaDTO>
+    + actualizar(GuiaDTO): GuiaDTO
 }
 ControladorUsuarioGuia *-> ServicioUsuarioGuia
 ControladorUsuarioGuia ..> FiltroDTO
@@ -354,6 +369,15 @@ class ControladorReview{
 
 ControladorReview *-> ServicioReview
 ControladorReview o-> ReviewDTO
+
+class ControladorServicio{
+    - servicioServicio: ServicioServicio
+
+    'idGuia, Servicio
+    + registrarServicio(long, ServicioDTO)
+    + eliminarServicio(ServicioDTO)
+}
+ControladorServicio *-> ServicioServicio
 
 ''**********************************************CAPA SERVICIOS**********************************************
 
