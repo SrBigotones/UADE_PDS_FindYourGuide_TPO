@@ -95,12 +95,12 @@ class NotificationSender implements INotificacion{
 
 }
 
-
 interface ISistemaPago{
     + cobrar()
     + transferir()
     + depositar()
 }
+
 interface IStateContrato{
     + pagar(Contrato)
     + cancelar(Contrato)
@@ -214,7 +214,7 @@ class RegistroFacebookEstrategy implements IMetodoRegistroEstrategy{
     + registrar(Usuario): void 
 }
 
-IMetodoRegistroEstrategy ..> Usuario
+''IMetodoRegistroEstrategy ..> Usuario
 
 ControladorRegistro ..> RegistroDTO
 
@@ -248,7 +248,7 @@ StateContratoAceptado ..> StateContratoCancelado
 IVerificacionGuiaAdapter ..> VerificarGuiaDTO
 
 ''**********************************************CAPA REPOSITORIOS**********************************************
-
+/'
 interface IRepository{
     + save(A)
     + update(A)
@@ -301,7 +301,16 @@ class RepositoryPago {
 }
 RepositoryPago o--> Pago
 
+ServicioPago *-> RepositoryPago
+ServicioServicio *-> RepositoryServicioGuia
+ServicioContrato *-> RepositoryContrato
+ServicioUsuarioTurista *-> RepositoryUsuarioTurista
+ServicioUsuarioGuia *--> RepositoryUsuarioGuia
+ServicioRegistro *-> RepositoryUsuarioGuia
+ServicioRegistro *-> RepositoryUsuarioTurista
+ServicioReview *-> RepositoryReview
 
+'/
 
 ''**********************************************CAPA CONTROLADOR**********************************************
 class ControladorContrato{
@@ -388,8 +397,6 @@ class ServicioUsuarioGuia{
     + buscarGuias(FiltroDTO): List<UsuarioGuia>
 }
 
-ServicioUsuarioGuia *--> RepositoryUsuarioGuia
-
 class ServicioRegistro{
     - repositorioUsuarioGuia: RepositoryUsuarioGuia
     - repositorioUsuarioTurista: RepositoryUsuarioTurista
@@ -399,8 +406,7 @@ class ServicioRegistro{
     + registrarUsuarioGuia(RegistroDTO): void
     + registrarUsuarioTurista(RegistroDTO): void
 }
-ServicioRegistro *-> RepositoryUsuarioGuia
-ServicioRegistro *-> RepositoryUsuarioTurista
+
 ServicioRegistro ..> RegistroDTO
 ServicioRegistro ..> IMetodoRegistroEstrategy
 
@@ -411,7 +417,7 @@ class ServicioUsuarioTurista{
 
     + modificarPerfil(long, UsuarioDTO): UsuarioDTO
 }
-ServicioUsuarioTurista *-> RepositoryUsuarioTurista
+
 ServicioUsuarioTurista o-> UsuarioDTO
 
 class ServicioContrato{
@@ -421,14 +427,12 @@ class ServicioContrato{
     + confirmarContrato(UsuarioTurista, Contrato)
     + cancelarContrato(Contrato)
 }
-ServicioContrato *-> RepositoryContrato
 
 class ServicioServicio{
     - repositorioServicio: RepositoryServicioGuia
 
     + agregarServicio(UsuarioGuia, ServicioDTO): ServicioDTO
 }
-ServicioServicio *-> RepositoryServicioGuia
 
 class ServicioPago{
     - repositorioPago: RepositoryPago
@@ -440,7 +444,7 @@ class ServicioPago{
     + multar(long, double)
     'idUsuario, Monto
 }
-ServicioPago *-> RepositoryPago
+
 ServicioPago *-> ISistemaPago
 
 class ServicioReview{
@@ -450,6 +454,5 @@ class ServicioReview{
     + actualizarReview()
     + eliminarReview()
 }
-ServicioReview *-> RepositoryReview
 
 @enduml
