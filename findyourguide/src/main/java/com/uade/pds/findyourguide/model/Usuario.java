@@ -11,21 +11,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
-public class User {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "usuarios")
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "name", nullable = false, length = 512)
-    private String name;
+    @Column(name = "nombre", nullable = false, length = 512)
+    private String nombre;
 
-    @Column(name = "surname", nullable = false, length = 512)
-    private String surname;
+    @Column(name = "apellido", nullable = false, length = 512)
+    private String apellido;
 
-    @Column(name = "sex", nullable = false, length = 512)
-    private String sex;
+    @Column(name = "sexo", nullable = false, length = 512)
+    private String sexo;
 
     @Column(name = "dni", nullable = false, length = 512)
     private String dni;
@@ -33,11 +34,11 @@ public class User {
     @Column(name = "email", nullable = false, length = 512)
     private String email;
 
-    @Column(name = "phoneNumber", nullable = false, length = 512)
-    private String phoneNumber;
+    @Column(name = "numTelefono", nullable = false, length = 512)
+    private String numTelefono;
 
-    @Column(name = "perfilImg", nullable = false, length = 512)
-    private String perfilImg;
+    @Column(name = "imgPerfil", nullable = false, length = 512)
+    private String imgPerfil;
 
     @Column(name = "password", nullable = false, length = 512)
     private String password;
