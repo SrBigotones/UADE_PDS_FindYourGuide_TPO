@@ -1,6 +1,9 @@
 package com.uade.pds.findyourguide.controller.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class UserDTO {
