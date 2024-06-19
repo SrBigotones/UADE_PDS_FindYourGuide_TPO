@@ -10,6 +10,7 @@ public class ServicioGuiaDTO {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tipoServicio = tipoServicio;
+    }
 
     // Getters y Setters
     public double getPrecio() {
