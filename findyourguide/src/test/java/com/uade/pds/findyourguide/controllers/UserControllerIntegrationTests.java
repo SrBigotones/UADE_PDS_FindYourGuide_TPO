@@ -61,8 +61,6 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void UserController_RegisterThenLoginUser_ReturnsStringToken() throws Exception {
-
-
         UserDTO userDTO = new UserDTO();
 
         userDTO.setEmail("test@test.com");

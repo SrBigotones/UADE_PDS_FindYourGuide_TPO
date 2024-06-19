@@ -1,5 +1,6 @@
 package com.uade.pds.findyourguide.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.UserDTO;
 import com.uade.pds.findyourguide.model.User;
 import com.uade.pds.findyourguide.security.JwtTokenUtil;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.swing.text.html.parser.Entity;
 
 @Controller
 public class UserController {
@@ -43,11 +46,7 @@ public class UserController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<Void> register(@RequestBody UserDTO userDTO) {
-        User newUser = User.builder().email(userDTO.getEmail()).dni(userDTO.getDni())
-                .name(userDTO.getName()).surname(userDTO.getSurname()).sex(userDTO.getSex())
-                .phoneNumber(userDTO.getPhoneNumber()).perfilImg(userDTO.getPerfilImg())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
-                .build();
+        User newUser = this.userDtoToUser(userDTO);
 
         User user = userService.saveUser(newUser);
         if (user == null) {
@@ -62,9 +61,34 @@ public class UserController {
     }
 
     @PostMapping(value = "/aver")
-    public ResponseEntity<Void> aver(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> aver(@RequestBody UserDTO userDTO) {
+        User user = this.userDtoToUser(userDTO);
+        UserDTO mapper = this.userToUserDTO(user);
+        System.out.println(mapper);
+        return ResponseEntity.ok(mapper);
+    }
 
-        return ResponseEntity.ok(null);
+
+    private User userDtoToUser(UserDTO userDTO){
+        User user = User.builder()
+                .email(userDTO.getEmail())
+                .dni(userDTO.getDni())
+                .name(userDTO.getName())
+                .surname(userDTO.getSurname())
+                .sex(userDTO.getSex())
+                .phoneNumber(userDTO.getPhoneNumber())
+                .perfilImg(userDTO.getPerfilImg())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .build();
+
+        return user;
+    }
+
+    private UserDTO userToUserDTO(User user){
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserDTO userDTO =  objectMapper.convertValue(user, UserDTO.class);
+
+        return userDTO;
     }
 
 }
