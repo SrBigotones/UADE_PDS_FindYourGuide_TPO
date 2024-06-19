@@ -2,9 +2,7 @@ package com.uade.pds.findyourguide.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uade.pds.findyourguide.controller.dto.UserDTO;
-import com.uade.pds.findyourguide.repository.UserRepository;
-import com.uade.pds.findyourguide.service.UserService;
+import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserControllerIntegrationTests {
+public class UsuarioControllerIntegrationTests {
 
     @LocalServerPort
     private int port;
@@ -42,18 +40,18 @@ public class UserControllerIntegrationTests {
     @Test
     public void UserController_RegisterUser_ReturnsStatusOK() throws Exception {
 
-        UserDTO userDTO = new UserDTO();
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
 
-        userDTO.setEmail("test@test.com");
-        userDTO.setDni("111111");
-        userDTO.setName("Pepe");
-        userDTO.setSurname("Pelusin");
-        userDTO.setSex("Male");
-        userDTO.setPhoneNumber("11111");
-        userDTO.setPerfilImg("img.jpg");
-        userDTO.setPassword("abc123");
+        usuarioDTO.setEmail("test@test.com");
+        usuarioDTO.setDni("111111");
+        usuarioDTO.setNombre("Pepe");
+        usuarioDTO.setApellido("Pelusin");
+        usuarioDTO.setSexo("Male");
+        usuarioDTO.setNumTelefono("11111");
+        usuarioDTO.setImgPerfil("img.jpg");
+        usuarioDTO.setPassword("abc123");
 
-        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(userDTO), headers);
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(usuarioDTO), headers);
         ResponseEntity<Void> response = restTemplate.exchange(createURLWithPort("/register"), HttpMethod.POST, entity, new ParameterizedTypeReference<Void>(){});
 
         assertEquals(response.getStatusCode(), HttpStatus.OK);
@@ -61,25 +59,25 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void UserController_RegisterThenLoginUser_ReturnsStringToken() throws Exception {
-        UserDTO userDTO = new UserDTO();
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
 
-        userDTO.setEmail("test@test.com");
-        userDTO.setDni("111111");
-        userDTO.setName("Pepe");
-        userDTO.setSurname("Pelusin");
-        userDTO.setSex("Male");
-        userDTO.setPhoneNumber("11111");
-        userDTO.setPerfilImg("img.jpg");
-        userDTO.setPassword("abc123");
+        usuarioDTO.setEmail("test@test.com");
+        usuarioDTO.setDni("111111");
+        usuarioDTO.setNombre("Pepe");
+        usuarioDTO.setApellido("Pelusin");
+        usuarioDTO.setSexo("Male");
+        usuarioDTO.setNumTelefono("11111");
+        usuarioDTO.setImgPerfil("img.jpg");
+        usuarioDTO.setPassword("abc123");
 
         //Register the user
-        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(userDTO), headers);
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(usuarioDTO), headers);
         ResponseEntity<Void> responseRegister = restTemplate.exchange(createURLWithPort("/register"), HttpMethod.POST, entity, new ParameterizedTypeReference<Void>(){});
         assertEquals(responseRegister.getStatusCode(), HttpStatus.OK);
 
 
         //Login the user
-        entity = new HttpEntity<>(objectMapper.writeValueAsString(userDTO), headers);
+        entity = new HttpEntity<>(objectMapper.writeValueAsString(usuarioDTO), headers);
         ResponseEntity<String> response = restTemplate.exchange(createURLWithPort("/login"), HttpMethod.POST, entity, new ParameterizedTypeReference<String>(){});
 
         assert response.hasBody();

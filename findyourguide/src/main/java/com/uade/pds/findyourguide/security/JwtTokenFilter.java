@@ -1,7 +1,7 @@
 package com.uade.pds.findyourguide.security;
 
-import com.uade.pds.findyourguide.model.User;
-import com.uade.pds.findyourguide.repository.UserRepository;
+import com.uade.pds.findyourguide.model.Usuario;
+import com.uade.pds.findyourguide.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +24,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired JwtTokenUtil jwtTokenUtil;
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     @Autowired CustomUserDetailsService userDetailsService;
 
@@ -44,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         // Get user identity and set it on the spring security context
-        Optional<User> userOpt = userRepository.findUserByEmail(jwtTokenUtil.getEmailFromToken(token));
+        Optional<Usuario> userOpt = usuarioRepository.findUserByEmail(jwtTokenUtil.getEmailFromToken(token));
         if (userOpt.isEmpty()) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         }

@@ -1,10 +1,10 @@
 package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uade.pds.findyourguide.controller.dto.UserDTO;
-import com.uade.pds.findyourguide.model.User;
+import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
+import com.uade.pds.findyourguide.model.Usuario;
 import com.uade.pds.findyourguide.security.JwtTokenUtil;
-import com.uade.pds.findyourguide.service.UserService;
+import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.swing.text.html.parser.Entity;
-
 @Controller
-public class UserController {
+public class UsuarioController {
 
-    @Autowired private UserService userService;
+    @Autowired private UsuarioService usuarioService;
 
     @Autowired private AuthenticationManager authenticationManager;
 
@@ -33,27 +31,27 @@ public class UserController {
     @Autowired private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(userDTO.getEmail(), userDTO.getPassword());
+    public ResponseEntity<String> login(@RequestBody UsuarioDTO usuarioDTO) {
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(usuarioDTO.getEmail(), usuarioDTO.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationRequest);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
 
-        String jwtToken = jwtTokenUtil.generateToken(userDTO.getEmail());
+        String jwtToken = jwtTokenUtil.generateToken(usuarioDTO.getEmail());
 
         return ResponseEntity.ok(jwtToken);
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<Void> register(@RequestBody UserDTO userDTO) {
-        User newUser = this.userDtoToUser(userDTO);
+    public ResponseEntity<Void> register(@RequestBody UsuarioDTO usuarioDTO) {
+        Usuario newUsuario = this.userDtoToUser(usuarioDTO);
 
-        User user = userService.saveUser(newUser);
-        if (user == null) {
+        Usuario usuario = usuarioService.saveUser(newUsuario);
+        if (usuario == null) {
             throw new UsernameNotFoundException("Ocurrio un error al registrar y loguear");
         }
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(newUser.getEmail(), userDTO.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(newUsuario.getEmail(), usuarioDTO.getPassword()));
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
 
@@ -61,34 +59,34 @@ public class UserController {
     }
 
     @PostMapping(value = "/aver")
-    public ResponseEntity<UserDTO> aver(@RequestBody UserDTO userDTO) {
-        User user = this.userDtoToUser(userDTO);
-        UserDTO mapper = this.userToUserDTO(user);
+    public ResponseEntity<UsuarioDTO> aver(@RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = this.userDtoToUser(usuarioDTO);
+        UsuarioDTO mapper = this.userToUserDTO(usuario);
         System.out.println(mapper);
         return ResponseEntity.ok(mapper);
     }
 
 
-    private User userDtoToUser(UserDTO userDTO){
-        User user = User.builder()
-                .email(userDTO.getEmail())
-                .dni(userDTO.getDni())
-                .name(userDTO.getName())
-                .surname(userDTO.getSurname())
-                .sex(userDTO.getSex())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .perfilImg(userDTO.getPerfilImg())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
+    private Usuario userDtoToUser(UsuarioDTO usuarioDTO){
+        Usuario usuario = Usuario.builder()
+                .email(usuarioDTO.getEmail())
+                .dni(usuarioDTO.getDni())
+                .nombre(usuarioDTO.getNombre())
+                .apellido(usuarioDTO.getApellido())
+                .sexo(usuarioDTO.getSexo())
+                .numTelefono(usuarioDTO.getNumTelefono())
+                .imgPerfil(usuarioDTO.getImgPerfil())
+                .password(passwordEncoder.encode(usuarioDTO.getPassword()))
                 .build();
 
-        return user;
+        return usuario;
     }
 
-    private UserDTO userToUserDTO(User user){
+    private UsuarioDTO userToUserDTO(Usuario usuario){
         ObjectMapper objectMapper = new ObjectMapper();
-        UserDTO userDTO =  objectMapper.convertValue(user, UserDTO.class);
+        UsuarioDTO usuarioDTO =  objectMapper.convertValue(usuario, UsuarioDTO.class);
 
-        return userDTO;
+        return usuarioDTO;
     }
 
 }

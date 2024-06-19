@@ -1,7 +1,7 @@
 package com.uade.pds.findyourguide.security;
 
-import com.uade.pds.findyourguide.model.User;
-import com.uade.pds.findyourguide.repository.UserRepository;
+import com.uade.pds.findyourguide.model.Usuario;
+import com.uade.pds.findyourguide.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,19 +14,19 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> userOpt = userRepository.findUserByEmail(email);
+        Optional<Usuario> userOpt = usuarioRepository.findUserByEmail(email);
         if (userOpt.isEmpty()) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         }
 
-        User user = userOpt.get();
+        Usuario usuario = userOpt.get();
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
+                .withUsername(usuario.getEmail())
+                .password(usuario.getPassword())
                 .roles("turista")
                 .build();
     }

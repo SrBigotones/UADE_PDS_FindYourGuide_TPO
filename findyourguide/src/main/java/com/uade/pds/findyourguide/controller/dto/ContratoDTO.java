@@ -13,6 +13,6 @@ public class ContratoDTO {
     private double importe;
     private EstadoContrato estado;
     private ServicioGuiaDTO servicio;
-    private UserDTO usuarioContratante;
-    private UserDTO usuarioGuia;
+    private UsuarioDTO usuarioContratante;
+    private UsuarioDTO usuarioGuia;
 }
