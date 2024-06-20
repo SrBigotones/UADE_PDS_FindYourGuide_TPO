@@ -26,7 +26,7 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(auth ->
                         auth
-                            .requestMatchers("/h2-console/**", "/login", "/register")
+                            .requestMatchers("/h2-console/**", "/login", "/registrar/guia")
                             .permitAll()
                             .anyRequest().authenticated())
                 .csrf(crsf -> crsf.disable())

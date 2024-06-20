@@ -1,5 +1,6 @@
 package com.uade.pds.findyourguide.controller.dto;
 
+import com.uade.pds.findyourguide.enums.EstrategiaRegistro;
 import com.uade.pds.findyourguide.enums.TipoUsuario;
 import lombok.Data;
 
@@ -15,4 +16,5 @@ public class UsuarioDTO {
     private String imgPerfil;
     private String password;
     private TipoUsuario tipo;
+
 }
