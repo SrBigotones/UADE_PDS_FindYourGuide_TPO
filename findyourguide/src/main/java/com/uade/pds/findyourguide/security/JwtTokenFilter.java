@@ -1,6 +1,6 @@
 package com.uade.pds.findyourguide.security;
 
-import com.uade.pds.findyourguide.model.Usuario;
+import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

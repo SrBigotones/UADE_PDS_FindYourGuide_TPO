@@ -891,7 +891,7 @@
 											"top": 276,
 											"width": 474.28125,
 											"height": 13,
-											"text": "+registro(RegistroDTO)",
+											"text": "+registro(RegistroDTO): void",
 											"horizontalAlignment": 0
 										},
 										{
@@ -20749,8 +20749,16 @@
 									"_parent": {
 										"$ref": "AAAAAAGPfnntNhC9vPw="
 									},
-									"name": "RegistroDTO",
-									"type": ""
+									"name": "RegistroDTO"
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAGQNu4ZuHDtiLQ=",
+									"_parent": {
+										"$ref": "AAAAAAGPfnntNhC9vPw="
+									},
+									"type": "void",
+									"direction": "return"
 								}
 							]
 						},

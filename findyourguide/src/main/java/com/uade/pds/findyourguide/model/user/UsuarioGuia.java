@@ -1,13 +1,16 @@
-package com.uade.pds.findyourguide.model;
+package com.uade.pds.findyourguide.model.user;
 
 import com.uade.pds.findyourguide.enums.Idioma;
+import com.uade.pds.findyourguide.model.CiudadPais;
+import com.uade.pds.findyourguide.model.ServicioGuia;
 import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Set;
 
 @Entity
-public class UsuarioGuia extends Usuario{
+@Table(name = "usuarios_guia")
+public class UsuarioGuia extends Usuario {
 
     @Column
     private String imgCredencial;

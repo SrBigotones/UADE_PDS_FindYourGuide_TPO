@@ -1,8 +1,8 @@
 package com.uade.pds.findyourguide.model.contrato;
 
 import com.uade.pds.findyourguide.model.ServicioGuia;
-import com.uade.pds.findyourguide.model.Usuario;
-import com.uade.pds.findyourguide.model.UsuarioGuia;
+import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.model.contrato.state.IStateContrato;
 import jakarta.persistence.*;
 

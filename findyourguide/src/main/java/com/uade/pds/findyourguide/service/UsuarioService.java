@@ -1,6 +1,6 @@
 package com.uade.pds.findyourguide.service;
 
-import com.uade.pds.findyourguide.model.Usuario;
+import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

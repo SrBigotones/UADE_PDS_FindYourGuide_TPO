@@ -2,7 +2,7 @@ package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
-import com.uade.pds.findyourguide.model.Usuario;
+import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.security.JwtTokenUtil;
 import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,15 +57,6 @@ public class UsuarioController {
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-
-    @PostMapping(value = "/aver")
-    public ResponseEntity<UsuarioDTO> aver(@RequestBody UsuarioDTO usuarioDTO) {
-        Usuario usuario = this.userDtoToUser(usuarioDTO);
-        UsuarioDTO mapper = this.userToUserDTO(usuario);
-        System.out.println(mapper);
-        return ResponseEntity.ok(mapper);
-    }
-
 
     private Usuario userDtoToUser(UsuarioDTO usuarioDTO){
         Usuario usuario = Usuario.builder()

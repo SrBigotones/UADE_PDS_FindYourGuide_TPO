@@ -1,4 +1,4 @@
-package com.uade.pds.findyourguide.model;
+package com.uade.pds.findyourguide.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Data
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
+@Entity
 @Table(name = "usuarios")
 public class Usuario {
 
