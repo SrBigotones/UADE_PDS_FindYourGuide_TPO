@@ -87,6 +87,11 @@ public class UsuarioController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @PostMapping(value = "/test")
+    public ResponseEntity<Void> testAuthorized() {
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
     private <T extends Usuario> T mapUserDTOToUser(UsuarioDTO usuarioDTO, T usuario){
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setDni(usuarioDTO.getDni());
