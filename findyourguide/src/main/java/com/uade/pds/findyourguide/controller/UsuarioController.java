@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.enums.EstrategiaRegistro;
 import com.uade.pds.findyourguide.model.user.Usuario;
-import com.uade.pds.findyourguide.model.user.UsuarioFactory;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.security.JwtTokenUtil;
 import com.uade.pds.findyourguide.service.UsuarioService;
@@ -49,7 +48,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/registrar/turista")
     public ResponseEntity<Void> registrarTurista(@RequestBody UsuarioDTO usuarioDTO, @RequestParam("tipoRegistro") EstrategiaRegistro estrategiaRegistro) {
-        Usuario newUsuario = UsuarioFactory.crearUsuarioTurista();
+        Usuario newUsuario = new Usuario();
         mapUserDTOToUser(usuarioDTO, newUsuario);
 
         usuarioService.cambiarEstrategia(mapEstrategiaRegistro(estrategiaRegistro));
@@ -68,7 +67,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/registrar/guia")
     public ResponseEntity<Void> registrarGuia(@RequestBody UsuarioDTO usuarioDTO, @RequestParam("tipoRegistro") EstrategiaRegistro estrategiaRegistro) {
-        UsuarioGuia newUsuario = UsuarioFactory.crearUsuarioGuia();
+        UsuarioGuia newUsuario = new UsuarioGuia();
 
         mapUserDTOToUser(usuarioDTO, newUsuario);
 
