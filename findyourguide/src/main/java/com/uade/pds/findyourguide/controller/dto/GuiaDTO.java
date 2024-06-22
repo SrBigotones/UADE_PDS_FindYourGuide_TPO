@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class GuiaDTO {
-    private long idUsuario;
+    private long id;
     private List<CiudadPaisDTO> ubicaciones;
     private String nombre;
     private String apellido;

@@ -24,11 +24,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain firstFilter(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .authorizeHttpRequests(auth ->
-                        auth
-                            .requestMatchers("/h2-console/**", "/login", "/registrar/guia")
+                .authorizeHttpRequests(auth -> auth
+//                            .requestMatchers("/h2-console/**", "/login", "/registrar/guia", "/registrar/turista")
+                            .requestMatchers("/**")
                             .permitAll()
-                            .anyRequest().authenticated())
+                            .anyRequest().authenticated()
+                            )
                 .csrf(crsf -> crsf.disable())
                 .addFilterBefore(
                     jwtTokenFilter,

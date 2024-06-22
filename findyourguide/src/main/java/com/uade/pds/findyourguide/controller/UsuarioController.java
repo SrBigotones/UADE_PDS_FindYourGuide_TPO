@@ -48,10 +48,11 @@ public class UsuarioController {
     }
 
     @PostMapping(value = "/registrar/turista")
-    public ResponseEntity<Void> registrarTurista(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<Void> registrarTurista(@RequestBody UsuarioDTO usuarioDTO, @RequestParam("tipoRegistro") EstrategiaRegistro estrategiaRegistro) {
         Usuario newUsuario = UsuarioFactory.crearUsuarioTurista();
         mapUserDTOToUser(usuarioDTO, newUsuario);
 
+        usuarioService.cambiarEstrategia(mapEstrategiaRegistro(estrategiaRegistro));
         Usuario usuario = usuarioService.registrarUsuarioTurista(newUsuario);
 
         if (usuario == null) {

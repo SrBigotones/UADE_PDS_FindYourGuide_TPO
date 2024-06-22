@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class ServicioGuiaDTO {
+    private long guiaId;
     private double precio;
     private String nombre;
     private String descripcion;
