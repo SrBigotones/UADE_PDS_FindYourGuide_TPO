@@ -4,15 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.model.ServicioGuia;
+import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.service.UsuarioGuiaService;
+import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +28,9 @@ public class UsuarioGuiaController {
 
     @Autowired
     private UsuarioGuiaService usuarioGuiaService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
 
     @GetMapping("/buscar/{id}")
@@ -44,7 +53,11 @@ public class UsuarioGuiaController {
 
 
     @PostMapping("/servicio")
-    public ResponseEntity publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO){
+    public ResponseEntity publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication){
+//        var obj = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        Optional<Usuario> usu = usuarioService.findUserByEmail(principal.getName());
+
+
         usuarioGuiaService.publicarServicio(this.servicioDTOToServicioGuia(servicioGuiaDTO));
         return ResponseEntity.ok(HttpStatus.OK);
     }

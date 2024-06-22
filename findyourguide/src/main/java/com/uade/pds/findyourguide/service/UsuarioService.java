@@ -8,6 +8,8 @@ import com.uade.pds.findyourguide.service.registro.IMetodoRegistroEstrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UsuarioService {
 
@@ -33,5 +35,10 @@ public class UsuarioService {
 
     public void cambiarEstrategia(IMetodoRegistroEstrategy estrategiaRegistro) {
         this.estrategiaRegistro = estrategiaRegistro;
+    }
+
+
+    public Optional<Usuario> findUserByEmail(String email){
+        return usuarioRepository.findUserByEmail(email);
     }
 }
