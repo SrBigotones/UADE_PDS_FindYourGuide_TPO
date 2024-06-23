@@ -1,7 +1,7 @@
 INSERT INTO USUARIOS(APELLIDO, DNI, EMAIL, IMG_PERFIL, NOMBRE, NUM_TELEFONO, PASSWORD, SEXO)
 VALUES
-('Pepoles', '31213467', 'pepe@pepe.com', 'img.jpg', 'Pepe', '111111', '$2a$04$5Wq2Pg/IMyz5J/zr2Bkbe.mE3pZIo8GS5kCZ2/2efZGfHvLqrb0Om', 'M');
-
+('Pepoles', '31213467', 'pepe@pepe.com', 'img.jpg', 'Pepe', '111111', '$2a$04$5Wq2Pg/IMyz5J/zr2Bkbe.mE3pZIo8GS5kCZ2/2efZGfHvLqrb0Om', 'M'),
+('Repo', '41255543', 'turista@gmail.com', 'img.jpg', 'Nico', '1438273634','$2a$10$u7UC0QdskYSCNFYNsmfwd.4SlPX8vQkrqQHl6Bb0y.G4u37B5pH8.', 'M');
 
 INSERT INTO USUARIOS_GUIA(ID, PUNTUACION, IMG_CREDENCIAL, IDIOMAS)
 VALUES
