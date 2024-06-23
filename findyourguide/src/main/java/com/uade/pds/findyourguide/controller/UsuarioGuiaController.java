@@ -6,6 +6,7 @@ import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
+import com.uade.pds.findyourguide.security.CustomUserDetails;
 import com.uade.pds.findyourguide.service.UsuarioGuiaService;
 import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +54,10 @@ public class UsuarioGuiaController {
 
 
     @PostMapping("/servicio")
-    public ResponseEntity publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication){
-//        var obj = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        Optional<Usuario> usu = usuarioService.findUserByEmail(principal.getName());
+    public ResponseEntity publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication) {
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
 
-
-        usuarioGuiaService.publicarServicio(this.servicioDTOToServicioGuia(servicioGuiaDTO));
+        usuarioGuiaService.publicarServicio(this.mapDTOToServicioGuia(servicioGuiaDTO, usuario.getId()));
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -91,14 +90,14 @@ public class UsuarioGuiaController {
         return servicioGuiaDTO;
     }
 
-    private ServicioGuia servicioDTOToServicioGuia(ServicioGuiaDTO servicioGuiaDTO){
+    private ServicioGuia mapDTOToServicioGuia(ServicioGuiaDTO servicioGuiaDTO, long idGuia){
         ServicioGuia servicioGuia = new ServicioGuia();
 
         servicioGuia.setNombre(servicioGuiaDTO.getNombre());
         servicioGuia.setPrecio(servicioGuiaDTO.getPrecio());
         servicioGuia.setTipoServicio(servicioGuiaDTO.getTipoServicio());
         servicioGuia.setDescripcion(servicioGuiaDTO.getDescripcion());
-        servicioGuia.setGuia_id(servicioGuiaDTO.getGuiaId());
+        servicioGuia.setGuia_id(idGuia);
 
         return servicioGuia;
     }

@@ -24,9 +24,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain firstFilter(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .authorizeHttpRequests(auth -> auth
-//                            .requestMatchers("/h2-console/**", "/login", "/registrar/guia", "/registrar/turista")
-                            .requestMatchers("/**")
+                .authorizeHttpRequests(auth ->
+                        auth
+                            .requestMatchers("/h2-console/**", "/login", "/registrar/**")
                             .permitAll()
                             .anyRequest().authenticated()
                             )
