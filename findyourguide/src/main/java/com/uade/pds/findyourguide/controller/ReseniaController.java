@@ -2,29 +2,31 @@ package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.ReseniaDTO;
+import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.model.Resenia;
+import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
 import com.uade.pds.findyourguide.security.CustomUserDetails;
 import com.uade.pds.findyourguide.service.ContratoService;
 import com.uade.pds.findyourguide.service.ReseniasService;
+import com.uade.pds.findyourguide.service.UsuarioGuiaService;
 import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-@RestController(value = "/resenia")
+@RestController
+@RequestMapping("/resenia")
 @EnableScheduling
 public class ReseniaController {
 
@@ -33,10 +35,14 @@ public class ReseniaController {
     @Autowired private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
+    private UsuarioGuiaService usuarioGuiaService;
+
+    @Autowired
     private ContratoService contratoService;
 
     @Autowired
     private UsuarioService usuarioService;
+
 
     private static final long DIAS_FINALIZADO = 5;
 
@@ -60,12 +66,36 @@ public class ReseniaController {
 
     @PostMapping(value = "/publicar")
     public ResponseEntity escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
-        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+        // Nos genera la reseña
         Resenia reseniaRecibida = toResenia(reseniaDTO);
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+        reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
         reseniaRecibida.setUsuarioTurista(usuario);
-        List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),usuario);
+        System.out.println(reseniaRecibida);
 
+
+        // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
+        List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
+        if (contratoEncontrado.isEmpty())
+            return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio", HttpStatus.FORBIDDEN);
+        else {
+            boolean posibleResenia = false;
+            for (Contrato c : contratoEncontrado) {
+                if (c.getEstadoContrato() == EstadoContrato.CONCLUIDO) {
+                    posibleResenia = true;
+                    break;
+                }
+            }
+            if (posibleResenia) {
+                Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
+                ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
+                return ResponseEntity.ok(reseniaDTO1);
+            }
+            else
+                return new ResponseEntity("No se puede realizar la reseña ya que el contrato todavia no fue concluido.", HttpStatus.FORBIDDEN);
+        }
     }
+
 
 
 

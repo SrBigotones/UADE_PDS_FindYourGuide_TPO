@@ -16,8 +16,9 @@ public class ReseniasService {
         return this.reseniaRepository.findById(id);
     }
 
-    public void escribirResenia(Resenia resenia){
-        this.reseniaRepository.save(resenia);
+    public Resenia escribirResenia(Resenia resenia){
+
+        return this.reseniaRepository.save(resenia);
     }
 
 }

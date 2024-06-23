@@ -21,6 +21,6 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
 
     List<Contrato> findContratosByFechaFinAndEstadoContrato(LocalDate fechaFin, EstadoContrato estadoContrato);
 
-    List<Contrato> findContratoByServicioAndUsuarioContratante(ServicioGuia servicioGuia, Usuario usuario);
+    List<Contrato> findContratoesByUsuarioContratanteAndAndServicio(Usuario usuarioContratante,ServicioGuia servicioGuia);
 }
 
