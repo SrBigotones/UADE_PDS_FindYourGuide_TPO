@@ -20,6 +20,8 @@ public class ServicioGuia {
     private double precio;
     @Column
     private TipoServicio tipoServicio;
+    @Column
+    private Long cupo;
 
 
     @Column
