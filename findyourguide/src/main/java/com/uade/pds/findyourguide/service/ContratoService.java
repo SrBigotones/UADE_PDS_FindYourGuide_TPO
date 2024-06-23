@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,19 +51,30 @@ public class ContratoService {
 
     }
 
-    public Contrato confirmarContrato(Contrato contrato){
-        contrato.setEstadoContrato(EstadoContrato.ACEPTADO);
+    public Contrato confirmarContrato(Contrato contrato) throws Exception {
+        contrato.getStateContrato().aprobar(contrato);
         return contratoRepository.save(contrato);
     }
 
-    public Contrato cancelarContrato(Contrato contrato){
-        contrato.setEstadoContrato(EstadoContrato.CANCELADO);
+    public Contrato cancelarContrato(Contrato contrato) throws Exception {
+        contrato.getStateContrato().cancelar(contrato);
         return contratoRepository.save(contrato);
     }
 
-    public Contrato pagarContrato(Contrato contrato, double importeAPagar){
+    public Contrato pagarContrato(Contrato contrato, double importeAPagar) throws Exception{
+
+        var stateContrato = contrato.getStateContrato();
+        stateContrato.pagar(contrato, importeAPagar);
+
         return contratoRepository.save(contrato);
     }
+
+
+    public Optional<Contrato> obtenerContratoPorId(long id){
+        return contratoRepository.findById(id);
+    }
+
+
 
 
     private Contrato findContrato(Contrato contrato){

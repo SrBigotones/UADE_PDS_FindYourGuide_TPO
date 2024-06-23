@@ -8,9 +8,9 @@ public class StateContratoFactory {
         IStateContrato stateContrato = null;
         switch (estadoContrato){
             case ACEPTADO -> stateContrato = new StateContratoAceptado();
-            case RESERVA -> stateContrato = new StateContratoAceptado();
-            case CANCELADO -> stateContrato = new StateContratoAceptado();
-            case CONCLUIDO -> stateContrato = new StateContratoAceptado();
+            case RESERVA -> stateContrato = new StateContratoReserva();
+            case CANCELADO -> stateContrato = new StateContratoCancelado();
+            case CONCLUIDO -> stateContrato = new StateContratoConcluido();
         }
 
         return stateContrato;
