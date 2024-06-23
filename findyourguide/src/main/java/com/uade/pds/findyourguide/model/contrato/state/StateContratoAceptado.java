@@ -7,7 +7,14 @@ import java.util.concurrent.ExecutionException;
 
 public class StateContratoAceptado implements IStateContrato{
     @Override
-    public void pagar(Contrato contrato, double importe) {
+    public void pagar(Contrato contrato, double importe) throws Exception{
+        double saldoPendiente = contrato.getServicio().getPrecio() - contrato.getImporte();
+
+
+        if(saldoPendiente < importe){
+            throw new Exception("El importe es mayor a la deuda a saldar del contrato");
+        }
+
         contrato.setImporte(contrato.getImporte() + importe);
     }
 

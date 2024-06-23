@@ -2,6 +2,7 @@ package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.ContratoDTO;
+import com.uade.pds.findyourguide.controller.dto.OperacionContratoDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
@@ -16,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -48,6 +46,67 @@ public class ContratoController {
 
     }
 
+    @PostMapping("/{contratoId}/abonar")
+    public ResponseEntity abonarContrato(@PathVariable long contratoId, @RequestBody Double importe, Authentication authentication) throws Exception {
+        Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+
+        this.verificarPermisoUsuarioContrante(contrato, usuario);
+
+        Contrato saved = contratoService.pagarContrato(contrato, importe);
+        ContratoDTO contratoDTO = this.contratoToDTO(saved);
+        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/{contratoId}/cancelar")
+    public ResponseEntity cancelarContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
+        Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
+
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+
+        try {
+            this.verificarPermisoUsuarioContrante(contrato, usuario);
+        }catch (Exception e){
+            this.verificarPermisoUsuarioContrado(contrato, usuario);
+        }
+
+        Contrato saved = contratoService.cancelarContrato(contrato);
+
+        ContratoDTO contratoDTO = this.contratoToDTO(saved);
+        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/{contratoId}/confirmar")
+    public ResponseEntity confirmarContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
+        Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
+
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+
+        this.verificarPermisoUsuarioContrado(contrato, usuario);
+
+        Contrato saved = contratoService.confirmarContrato(contrato);
+
+        ContratoDTO contratoDTO = this.contratoToDTO(saved);
+        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity obtenerContratoPorId(@PathVariable long id){
+        ContratoDTO contratoDTO = this.contratoToDTO(contratoService.obtenerContratoPorId(id).get());
+
+        return ResponseEntity.ok(contratoDTO);
+    }
+
+    private void verificarPermisoUsuarioContrante(Contrato contrato, Usuario usuario) throws Exception{
+        if(contrato.getUsuarioContratante().getId() != usuario.getId()){
+            throw new Exception("El usuario no corresponde al contrato");
+        }
+    }
+    private void verificarPermisoUsuarioContrado(Contrato contrato, Usuario usuario) throws Exception{
+        if(contrato.getUsuarioContratado().getId() != usuario.getId()){
+            throw new Exception("El usuario no corresponde al contrato");
+        }
+    }
 
 
 
