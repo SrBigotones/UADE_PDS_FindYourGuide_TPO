@@ -12,3 +12,4 @@ VALUES
     ('Museos en Italia', '5 dias para recorrer todos los museos de Italia', 1, 123.12, 1,3),
     ('Musica de cuba', 'Los mejores artistas cubanos, salsa y habanos', 1, 66, 1,5),
     ( 'Alfajores Argentina', 'La mejor cata de alfajores', 1, 1000, 1,10);
+
