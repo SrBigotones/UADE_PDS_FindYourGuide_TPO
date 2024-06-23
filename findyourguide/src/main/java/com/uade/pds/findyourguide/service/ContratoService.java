@@ -25,16 +25,15 @@ import java.util.stream.Collectors;
 @Service
 public class ContratoService {
     @Autowired private ContratoRepository contratoRepository;
-    @Autowired private ServicioGuiaRepository servicioGuiaRepository;
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private UsuarioGuiaRepository usuarioGuiaRepository;
+    @Autowired private UsuarioGuiaService usuarioGuiaService;
+    @Autowired private UsuarioService usuarioService;
 
     public Contrato contratar(Contrato contrato) throws Exception{
 
 
-        ServicioGuia servicioGuia = servicioGuiaRepository.findById(contrato.getServicio().getId()).get();
-        Usuario usuario = usuarioRepository.findById(contrato.getUsuarioContratante().getId()).get();
-        UsuarioGuia usuarioGuia = usuarioGuiaRepository.findById(contrato.getUsuarioContratado().getId()).get();
+        ServicioGuia servicioGuia = usuarioGuiaService.obtenerServicioPorId(contrato.getServicio().getId()).get();
+        Usuario usuario = usuarioService.findUserById(contrato.getUsuarioContratante().getId()).get();
+        UsuarioGuia usuarioGuia = usuarioGuiaService.buscarUsuarioGuia(contrato.getUsuarioContratado().getId()).get();
 
         contrato.setUsuarioContratante(usuario);
         contrato.setUsuarioContratado(usuarioGuia);

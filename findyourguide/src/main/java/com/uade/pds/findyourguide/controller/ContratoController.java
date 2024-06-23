@@ -9,11 +9,13 @@ import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
+import com.uade.pds.findyourguide.security.CustomUserDetails;
 import com.uade.pds.findyourguide.service.ContratoService;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +32,11 @@ public class ContratoController {
 
 
     @PostMapping
-    public ResponseEntity contratar(@RequestBody ContratoDTO contratoDTO){
+    public ResponseEntity contratar(@RequestBody ContratoDTO contratoDTO, Authentication authentication){
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         Contrato contrato = this.dtoToContrato(contratoDTO);
+        contrato.setUsuarioContratante(usuario);
+
         Contrato contratoSaved = null;
         try {
             contratoSaved = contratoService.contratar(contrato);
@@ -62,6 +67,8 @@ public class ContratoController {
 
 
     private Usuario usuarioDtoToUsuario(UsuarioDTO usuarioDTO){
+        if(usuarioDTO == null) return null;
+
         Usuario usuario = new Usuario();
 
         usuario.setId(usuarioDTO.getId());
@@ -106,8 +113,9 @@ public class ContratoController {
     }
 
     private UsuarioDTO usuarioToDTO(Usuario usuario){
+
         UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setNombre(usuario.getNombre());
+        usuarioDTO.setEmail(usuario.getEmail());
 
         return usuarioDTO;
     }

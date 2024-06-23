@@ -27,6 +27,10 @@ public class UsuarioGuiaService {
         return usu;
     }
 
+    public Optional<ServicioGuia> obtenerServicioPorId(long id){
+        return servicioGuiaRepository.findById(id);
+    }
+
     public void publicarServicio(ServicioGuia servicioGuia){
         servicioGuiaRepository.save(servicioGuia);
     }
