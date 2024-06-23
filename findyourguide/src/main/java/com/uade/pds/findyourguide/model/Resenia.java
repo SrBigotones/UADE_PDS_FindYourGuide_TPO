@@ -2,7 +2,9 @@ package com.uade.pds.findyourguide.model;
 
 import com.uade.pds.findyourguide.model.user.Usuario;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Resenia {
     @Id

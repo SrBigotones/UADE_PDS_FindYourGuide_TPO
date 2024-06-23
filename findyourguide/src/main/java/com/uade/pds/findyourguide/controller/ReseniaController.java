@@ -5,15 +5,19 @@ import com.uade.pds.findyourguide.controller.dto.ReseniaDTO;
 import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.security.CustomUserDetails;
 import com.uade.pds.findyourguide.service.ContratoService;
 import com.uade.pds.findyourguide.service.ReseniasService;
 import com.uade.pds.findyourguide.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -36,13 +40,11 @@ public class ReseniaController {
 
     private static final long DIAS_FINALIZADO = 5;
 
-    // @Scheduled(fixedRate = DIAS_FINALIZADO * 24 * 60 * 60 * 1000L)
-    @Scheduled(fixedRate = 5000)
+    //@Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
     public void buscarPendientesResenias() {
-        System.out.println("Se corrio la funcion. (:");
         LocalDate fechaObjetivo = LocalDate.now().minusDays(DIAS_FINALIZADO);
         List<Contrato> contratosEncontrados = contratoService.obtenerContratosConFechaFin(fechaObjetivo);
-        System.out.println(contratosEncontrados.isEmpty());
         for (Contrato c : contratosEncontrados) {
             Optional<Usuario> usuarioEncontrado = usuarioService.findUserById(c.getUsuarioContratante().getId());
             // ACA LE AVISAMOS AL MAIL POR ACCION DIVINA
@@ -57,8 +59,12 @@ public class ReseniaController {
     }
 
     @PostMapping(value = "/publicar")
-    public ResponseEntity<ReseniaDTO> escribirResenia(ReseniaDTO reseniaDTO){
-        return null;
+    public ResponseEntity escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+        Resenia reseniaRecibida = toResenia(reseniaDTO);
+        reseniaRecibida.setUsuarioTurista(usuario);
+        List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),usuario);
+
     }
 
 

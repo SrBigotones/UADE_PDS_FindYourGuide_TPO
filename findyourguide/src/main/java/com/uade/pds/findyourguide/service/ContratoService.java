@@ -81,6 +81,9 @@ public class ContratoService {
     }
 
 
+    public List<Contrato> obtenerContratoPorServicioYGuia(ServicioGuia servicioGuia, Usuario usuarioContratante) {
+        return contratoRepository.findContratoByServicioAndUsuarioContratante(servicioGuia,usuarioContratante);
+    }
 
     private Contrato findContrato(Contrato contrato){
         var contratoFound = contratoRepository.findById(contrato.getId());
