@@ -1,10 +1,12 @@
 package com.uade.pds.findyourguide.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.uade.pds.findyourguide.enums.EstrategiaRegistro;
 import com.uade.pds.findyourguide.enums.TipoUsuario;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RegistroDTO {
     private String email;
     private String password;

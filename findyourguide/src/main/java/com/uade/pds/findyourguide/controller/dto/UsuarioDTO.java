@@ -1,12 +1,14 @@
 package com.uade.pds.findyourguide.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.uade.pds.findyourguide.enums.EstrategiaRegistro;
 import com.uade.pds.findyourguide.enums.TipoUsuario;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UsuarioDTO {
-    private long id;
+    private Long id;
     private String nombre;
     private String apellido;
     private String sexo;

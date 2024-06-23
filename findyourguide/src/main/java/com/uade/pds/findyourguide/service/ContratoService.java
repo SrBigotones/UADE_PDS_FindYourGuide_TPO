@@ -1,8 +1,94 @@
 package com.uade.pds.findyourguide.service;
 
+import com.uade.pds.findyourguide.enums.EstadoContrato;
+import com.uade.pds.findyourguide.model.ServicioGuia;
+import com.uade.pds.findyourguide.model.contrato.Contrato;
+import com.uade.pds.findyourguide.model.contrato.state.StateContratoAceptado;
+import com.uade.pds.findyourguide.model.contrato.state.StateContratoCancelado;
+import com.uade.pds.findyourguide.model.contrato.state.StateContratoReserva;
+import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.model.user.UsuarioGuia;
+import com.uade.pds.findyourguide.repository.ContratoRepository;
+import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
+import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
+import com.uade.pds.findyourguide.repository.UsuarioRepository;
+import org.hibernate.Session;
+import org.hibernate.grammars.hql.HqlParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ContratoService {
+    @Autowired private ContratoRepository contratoRepository;
+    @Autowired private ServicioGuiaRepository servicioGuiaRepository;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private UsuarioGuiaRepository usuarioGuiaRepository;
+
+    public Contrato contratar(Contrato contrato) throws Exception{
+
+
+        ServicioGuia servicioGuia = servicioGuiaRepository.findById(contrato.getServicio().getId()).get();
+        Usuario usuario = usuarioRepository.findById(contrato.getUsuarioContratante().getId()).get();
+        UsuarioGuia usuarioGuia = usuarioGuiaRepository.findById(contrato.getUsuarioContratado().getId()).get();
+
+        contrato.setUsuarioContratante(usuario);
+        contrato.setUsuarioContratado(usuarioGuia);
+        contrato.setServicio(servicioGuia);
+
+        if(this.checkDisponibilidad(contrato)){
+            Contrato saved = contratoRepository.save(contrato);
+
+            return saved;
+        }else{
+            throw new Exception("Cupos excedido");
+        }
+
+
+    }
+
+    public Contrato confirmarContrato(Contrato contrato){
+        contrato.setEstadoContrato(EstadoContrato.ACEPTADO);
+        return contratoRepository.save(contrato);
+    }
+
+    public Contrato cancelarContrato(Contrato contrato){
+        contrato.setEstadoContrato(EstadoContrato.CANCELADO);
+        return contratoRepository.save(contrato);
+    }
+
+    public Contrato pagarContrato(Contrato contrato, double importeAPagar){
+        return contratoRepository.save(contrato);
+    }
+
+
+    private Contrato findContrato(Contrato contrato){
+        var contratoFound = contratoRepository.findById(contrato.getId());
+
+
+
+        return contratoFound.orElseGet(null);
+    }
+
+
+    private boolean checkDisponibilidad(Contrato contrato){
+        List<Contrato> contratoList = contratoRepository
+                .findContratoByServicioAndFechaIniIsGreaterThanEqualAndFechaFinIsLessThanEqual(contrato.getServicio(), contrato.getFechaIni(), contrato.getFechaFin())
+                .stream().filter(ctr -> ctr.getEstadoContrato() != EstadoContrato.CANCELADO && ctr.getEstadoContrato() != EstadoContrato.CONCLUIDO)
+                .toList();
+
+
+        int registrados = contratoList.size();
+
+        if(registrados >= contrato.getServicio().getCupo()){
+            return false;
+        }
+
+        return true;
+    }
 
 }
