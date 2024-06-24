@@ -36,13 +36,13 @@ public class UsuarioGuiaController {
 
     @GetMapping("/buscar/{id}")
     public ResponseEntity<GuiaDTO> buscarGuia(@PathVariable long id){
-        UsuarioGuia usuarioGuia= usuarioGuiaService.buscarUsuarioGuia(id).orElse(null);
+        Optional<UsuarioGuia> usuarioGuia = usuarioGuiaService.buscarUsuarioGuia(id);
 
-        if(usuarioGuia == null){
+        if(usuarioGuia.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.ok(guiaToDTO(usuarioGuia));
+        return ResponseEntity.ok(guiaToDTO(usuarioGuia.get()));
     }
     @GetMapping("/buscarAll")
     public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
@@ -50,15 +50,16 @@ public class UsuarioGuiaController {
     }
 
     @PutMapping("/actualizar")
-    public void actualizar(GuiaDTO guiaDTO){}
+    public void actualizar(GuiaDTO guiaDTO) {
 
+    }
 
     @PostMapping("/servicio")
-    public ResponseEntity publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication) {
+    public ResponseEntity<Void> publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication) {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
 
         usuarioGuiaService.publicarServicio(this.mapDTOToServicioGuia(servicioGuiaDTO, usuario.getId()));
-        return ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private GuiaDTO guiaToDTO(UsuarioGuia usuarioGuia){
