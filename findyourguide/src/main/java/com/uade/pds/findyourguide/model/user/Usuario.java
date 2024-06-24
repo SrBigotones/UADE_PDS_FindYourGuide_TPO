@@ -42,4 +42,5 @@ public class Usuario {
 
     @Column(name = "password", nullable = false, length = 512)
     private String password;
+
 }

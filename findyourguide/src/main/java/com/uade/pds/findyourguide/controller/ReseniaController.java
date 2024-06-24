@@ -45,6 +45,8 @@ public class ReseniaController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private  TrofeoController trofeoController;
 
     private static final long DIAS_FINALIZADO = 5;
 
@@ -81,14 +83,14 @@ public class ReseniaController {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
         reseniaRecibida.setUsuarioTurista(usuario);
-
         // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
-        List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
-        if (contratoEncontrado.isEmpty())
+        List<Contrato> contratosEncontrados = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
+        if (contratosEncontrados.isEmpty())
             return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio o no fue concluido.", HttpStatus.FORBIDDEN);
         else {
             Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
             ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
+            trofeoController.verificarPremios(reseniaSaved);
             return ResponseEntity.ok(reseniaDTO1);
         }
     }
