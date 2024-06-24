@@ -22,4 +22,6 @@ public interface ReseniaRepository extends JpaRepository<Resenia, Long> {
     List<Resenia> findReseniasByServicioContratadoGuiaId(@Param("guiaId") long guiaId);
 
     List<Resenia> findReseniasByUsuarioTurista(Usuario usuario_turista);
+
+    List<Resenia> findReseniasByUsuarioTuristaAndAndServicioContratado(Usuario usuario_turista, ServicioGuia servicio_contratado);
 }

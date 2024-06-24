@@ -81,6 +81,9 @@ public class ReseniaController {
         // Nos genera la reseña
         Resenia reseniaRecibida = toResenia(reseniaDTO);
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+
+        if (!reseniasService.yaHizoResenia(usuario,reseniaRecibida.getServicioContratado())) {
+
         reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
         reseniaRecibida.setUsuarioTurista(usuario);
         // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
@@ -92,6 +95,9 @@ public class ReseniaController {
             ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
             trofeoController.verificarPremios(reseniaSaved);
             return ResponseEntity.ok(reseniaDTO1);
+        }}
+        else {
+            return new ResponseEntity("No se puede realizar la reseña ya que ya se reseño el servicio.",HttpStatus.FORBIDDEN);
         }
     }
 

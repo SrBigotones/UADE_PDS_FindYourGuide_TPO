@@ -1,6 +1,7 @@
 package com.uade.pds.findyourguide.service;
 
 import com.uade.pds.findyourguide.model.Resenia;
+import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.repository.ReseniaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,11 @@ public class ReseniasService {
 
     public List<Resenia> obtenerReseniasDeUsuario(Usuario usuario) {
         return reseniaRepository.findReseniasByUsuarioTurista(usuario);
+    }
+
+
+    public boolean yaHizoResenia(Usuario usuario, ServicioGuia servicioGuia) {
+        return !reseniaRepository.findReseniasByUsuarioTuristaAndAndServicioContratado(usuario, servicioGuia).isEmpty();
     }
 
 }
