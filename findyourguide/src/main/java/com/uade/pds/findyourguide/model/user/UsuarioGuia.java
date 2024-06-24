@@ -14,18 +14,19 @@ import java.util.Set;
 @Table(name = "usuarios_guia")
 public class UsuarioGuia extends Usuario {
 
-    @Column
+    @Column(name = "imgCredencial")
     private String imgCredencial;
-    @Column
+    @Column(name = "puntuacion")
     private int puntuacion;
-    @Column
+
+    @Column(name = "idiomas")
     private List<Idioma> idiomas;
 
     @OneToMany
     @JoinColumn(name = "guia_id")
     private List<ServicioGuia> listServicios;
 
-    @ManyToMany
+    @ManyToMany()
     private List<CiudadPais> listaCiudadesActivo;
 
 

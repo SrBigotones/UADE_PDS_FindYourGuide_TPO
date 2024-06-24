@@ -1,10 +1,12 @@
 package com.uade.pds.findyourguide.model.user;
 
+import com.uade.pds.findyourguide.enums.EstadoUsuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Builder
 @Data
@@ -31,7 +33,7 @@ public class Usuario {
     @Column(name = "dni", nullable = false, length = 512)
     private String dni;
 
-    @Column(name = "email", nullable = false, length = 512)
+    @Column(name = "email", nullable = false, length = 512, unique = true)
     private String email;
 
     @Column(name = "numTelefono", nullable = false, length = 512)
@@ -42,4 +44,12 @@ public class Usuario {
 
     @Column(name = "password", nullable = false, length = 512)
     private String password;
+
+    @Column(name = "estado", nullable = false, length = 512)
+    @Enumerated(EnumType.STRING)
+    private EstadoUsuario estado;
+
+    public boolean isActive() {
+        return estado.equals(EstadoUsuario.ACTIVO);
+    }
 }

@@ -2,10 +2,13 @@ package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
+import com.uade.pds.findyourguide.enums.EstadoUsuario;
 import com.uade.pds.findyourguide.enums.EstrategiaRegistro;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
+import com.uade.pds.findyourguide.security.CustomUserDetails;
 import com.uade.pds.findyourguide.security.JwtTokenUtil;
+import com.uade.pds.findyourguide.service.UsuarioGuiaService;
 import com.uade.pds.findyourguide.service.UsuarioService;
 import com.uade.pds.findyourguide.service.registro.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +23,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
 
 @Controller
 public class UsuarioController {
 
     @Autowired private UsuarioService usuarioService;
 
-    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private UsuarioGuiaService usuarioGuiaService;
 
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private AuthenticationManager authenticationManager;
 
     @Autowired private JwtTokenUtil jwtTokenUtil;
 
@@ -48,8 +54,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/registrar/turista")
     public ResponseEntity<Void> registrarTurista(@RequestBody UsuarioDTO usuarioDTO, @RequestParam("tipoRegistro") EstrategiaRegistro estrategiaRegistro) {
-        Usuario newUsuario = new Usuario();
-        mapUserDTOToUser(usuarioDTO, newUsuario);
+        Usuario newUsuario = mapDTOToUsuario(usuarioDTO);
 
         usuarioService.cambiarEstrategia(mapEstrategiaRegistro(estrategiaRegistro));
         Usuario usuario = usuarioService.registrarUsuarioTurista(newUsuario);
@@ -62,19 +67,15 @@ public class UsuarioController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/registrar/guia")
     public ResponseEntity<Void> registrarGuia(@RequestBody UsuarioDTO usuarioDTO, @RequestParam("tipoRegistro") EstrategiaRegistro estrategiaRegistro) {
-        UsuarioGuia newUsuario = new UsuarioGuia();
-
-        mapUserDTOToUser(usuarioDTO, newUsuario);
+        UsuarioGuia newUsuario = mapDTOToUsuarioGuia(usuarioDTO);
 
         usuarioService.cambiarEstrategia(mapEstrategiaRegistro(estrategiaRegistro));
         Usuario usuario = usuarioService.registrarUsuarioGuia(newUsuario);
-
-
 
         if (usuario == null) {
             throw new UsernameNotFoundException("Ocurrio un error al registrar y loguear");
@@ -84,15 +85,41 @@ public class UsuarioController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/subirCredencial")
+    public ResponseEntity<Void> subirCredencial(@RequestParam("imgUrl") String imgUrl, Authentication authentication) {
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+        usuarioGuiaService.registrarImgCredencial(usuario, imgUrl);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/test")
-    public ResponseEntity<Void> testAuthorized() {
+    public ResponseEntity<Void> testAuthenticated() {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    private <T extends Usuario> T mapUserDTOToUser(UsuarioDTO usuarioDTO, T usuario){
+    private UsuarioGuia mapDTOToUsuarioGuia(UsuarioDTO usuarioDTO){
+        UsuarioGuia usuario = new UsuarioGuia();
+        rellenarValoresComunes(usuarioDTO, usuario);
+        usuario.setIdiomas(usuarioDTO.getIdiomas());
+        usuario.setPuntuacion(0);
+        usuario.setListServicios(new ArrayList<>());
+        usuario.setListaCiudadesActivo(new ArrayList<>());
+
+        return usuario;
+    }
+
+    private Usuario mapDTOToUsuario(UsuarioDTO usuarioDTO){
+        Usuario usuario = new Usuario();
+        rellenarValoresComunes(usuarioDTO, usuario);
+
+        return usuario;
+    }
+
+    private void rellenarValoresComunes(UsuarioDTO usuarioDTO, Usuario usuario) {
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setDni(usuarioDTO.getDni());
         usuario.setNombre(usuarioDTO.getNombre());
@@ -100,16 +127,7 @@ public class UsuarioController {
         usuario.setSexo(usuarioDTO.getSexo());
         usuario.setNumTelefono(usuarioDTO.getNumTelefono());
         usuario.setImgPerfil(usuarioDTO.getImgPerfil());
-        usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
-
-        return usuario;
-    }
-
-    private UsuarioDTO userToUserDTO(Usuario usuario){
-        ObjectMapper objectMapper = new ObjectMapper();
-        UsuarioDTO usuarioDTO =  objectMapper.convertValue(usuario, UsuarioDTO.class);
-
-        return usuarioDTO;
+        usuario.setPassword(usuarioDTO.getPassword());
     }
 
     private IMetodoRegistroEstrategy mapEstrategiaRegistro(EstrategiaRegistro estrategiaEnum) {
