@@ -1,21 +1,22 @@
-package com.uade.pds.findyourguide.model.premio;
+package com.uade.pds.findyourguide.model.trofeo;
 
-import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class Premio {
+public class Trofeo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @ManyToOne
     @JoinColumn
-    private Usuario usuarioTurista;
+    private Usuario usuarioGanador;
 
-    @Column
-    private String calificacion;
+    @ManyToOne
+    @JoinColumn
+    private TipoTrofeo trofeoOtorgado;
 }
