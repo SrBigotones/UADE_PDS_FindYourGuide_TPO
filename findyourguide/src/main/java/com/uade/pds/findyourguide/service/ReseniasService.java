@@ -19,13 +19,10 @@ public class ReseniasService {
     }
 
     public Resenia escribirResenia(Resenia resenia){
-
         return this.reseniaRepository.save(resenia);
     }
 
     public List<Resenia> obtenerReseniasDeGuia(long id_guia) {
-
-
         return reseniaRepository.findReseniasByServicioContratadoGuiaId(id_guia);
     }
 

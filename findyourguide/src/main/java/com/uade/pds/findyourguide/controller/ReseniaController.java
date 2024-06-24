@@ -81,14 +81,14 @@ public class ReseniaController {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
         reseniaRecibida.setUsuarioTurista(usuario);
-
         // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
-        List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
-        if (contratoEncontrado.isEmpty())
+        List<Contrato> contratosEncontrados = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
+        if (contratosEncontrados.isEmpty())
             return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio o no fue concluido.", HttpStatus.FORBIDDEN);
         else {
             Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
             ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
+            // ACA TENDRIAMOS QUE ALERTAR A LA CLASE TROFEOS/PREMIOS PARA QUE REVISE LA CANTIDAD DE RESEÑAS DEL USUARIO Y CUANTAS TIENE EL GUIA.
             return ResponseEntity.ok(reseniaDTO1);
         }
     }
