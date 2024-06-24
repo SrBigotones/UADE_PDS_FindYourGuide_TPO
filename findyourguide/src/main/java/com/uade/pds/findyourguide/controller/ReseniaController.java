@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/resenia")
 @EnableScheduling
@@ -59,10 +61,18 @@ public class ReseniaController {
     }
 
 
-    @GetMapping(value = "/guia")
-    public ResponseEntity<List<ReseniaDTO>> obtenerReseniaPorGuia(long id){
-        return null;
+    @GetMapping(value = "/guia/{id}")
+    public ResponseEntity<List<ReseniaDTO>> obtenerReseniaPorGuia(@PathVariable long id){
+        List<Resenia> reseniasEncontradas = reseniasService.obtenerReseniasDeGuia(id);
+        List<ReseniaDTO> reseniasDTO = reseniasEncontradas.stream()
+                .map(resenia -> {
+                    return objectMapper.convertValue(resenia, ReseniaDTO.class);
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(reseniasDTO);
+
     }
+
 
     @PostMapping(value = "/publicar")
     public ResponseEntity escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
@@ -71,8 +81,6 @@ public class ReseniaController {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
         reseniaRecibida.setUsuarioTurista(usuario);
-        System.out.println(reseniaRecibida);
-
 
         // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
         List<Contrato> contratoEncontrado = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
@@ -84,6 +92,8 @@ public class ReseniaController {
             return ResponseEntity.ok(reseniaDTO1);
         }
     }
+
+
 
 
 
