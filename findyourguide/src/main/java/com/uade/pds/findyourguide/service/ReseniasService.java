@@ -1,10 +1,13 @@
 package com.uade.pds.findyourguide.service;
 
 import com.uade.pds.findyourguide.model.Resenia;
+import com.uade.pds.findyourguide.model.ServicioGuia;
+import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.repository.ReseniaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,8 +19,22 @@ public class ReseniasService {
         return this.reseniaRepository.findById(id);
     }
 
-    public void escribirResenia(Resenia resenia){
-        this.reseniaRepository.save(resenia);
+    public Resenia escribirResenia(Resenia resenia){
+        return this.reseniaRepository.save(resenia);
+    }
+
+    public List<Resenia> obtenerReseniasDeGuia(long id_guia) {
+        return reseniaRepository.findReseniasByServicioContratadoGuiaId(id_guia);
+    }
+
+
+    public List<Resenia> obtenerReseniasDeUsuario(Usuario usuario) {
+        return reseniaRepository.findReseniasByUsuarioTurista(usuario);
+    }
+
+
+    public boolean yaHizoResenia(Usuario usuario, ServicioGuia servicioGuia) {
+        return !reseniaRepository.findReseniasByUsuarioTuristaAndAndServicioContratado(usuario, servicioGuia).isEmpty();
     }
 
 }

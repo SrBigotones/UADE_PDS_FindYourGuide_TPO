@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,8 +76,14 @@ public class ContratoService {
         return contratoRepository.findById(id);
     }
 
+    public List<Contrato> obtenerContratosConFechaFin(LocalDate fechaFin) {
+        return contratoRepository.findContratosByFechaFinAndEstadoContrato(fechaFin, EstadoContrato.CONCLUIDO);
+    }
 
 
+    public List<Contrato> obtenerContratoPorServicioYGuia(ServicioGuia servicioGuia,Usuario usuarioContratante) {
+        return contratoRepository.findContratoesByUsuarioContratanteAndAndServicioAndEstadoContrato(usuarioContratante,servicioGuia,EstadoContrato.CONCLUIDO);
+    }
 
     private Contrato findContrato(Contrato contrato){
         var contratoFound = contratoRepository.findById(contrato.getId());

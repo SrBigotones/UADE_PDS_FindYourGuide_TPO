@@ -1,4 +1,4 @@
-package com.uade.pds.findyourguide.model;
+package com.uade.pds.findyourguide.model.trofeo;
 
 import com.uade.pds.findyourguide.model.user.Usuario;
 import jakarta.persistence.*;
@@ -6,18 +6,17 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Resenia {
+public class Trofeo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     @ManyToOne
     @JoinColumn
-    private Usuario usuarioTurista;
+    private Usuario usuarioGanador;
+
     @ManyToOne
     @JoinColumn
-    private ServicioGuia servicioContratado;
-    @Column
-    private short calificacion;
-    @Column
-    private String comentario;
+    private TipoTrofeo trofeoOtorgado;
 }
