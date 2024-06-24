@@ -45,6 +45,8 @@ public class ReseniaController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private  TrofeoController trofeoController;
 
     private static final long DIAS_FINALIZADO = 5;
 
@@ -88,7 +90,7 @@ public class ReseniaController {
         else {
             Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
             ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
-            // ACA TENDRIAMOS QUE ALERTAR A LA CLASE TROFEOS/PREMIOS PARA QUE REVISE LA CANTIDAD DE RESEÑAS DEL USUARIO Y CUANTAS TIENE EL GUIA.
+            trofeoController.verificarPremios(reseniaSaved);
             return ResponseEntity.ok(reseniaDTO1);
         }
     }

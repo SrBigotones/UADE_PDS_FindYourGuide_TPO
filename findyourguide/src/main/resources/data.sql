@@ -21,5 +21,3 @@ VALUES
     (0,'El guia recibio mas de 10 reseñas con una puntuacion promedio superior a 4.5!','Trofeo al Exito'),
     (1,'El usuario escribio mas de 10 reseñas!','Trofeo a la reseña');
 
-
-INSERT INTO TROFEO(ID,USUARIO_GANADOR_ID,TROFEO_OTORGADO_ID) VALUES (1,1,1);

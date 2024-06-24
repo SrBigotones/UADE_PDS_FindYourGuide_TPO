@@ -27,4 +27,8 @@ public class ReseniasService {
     }
 
 
+    public List<Resenia> obtenerReseniasDeUsuario(Usuario usuario) {
+        return reseniaRepository.findReseniasByUsuarioTurista(usuario);
+    }
+
 }
