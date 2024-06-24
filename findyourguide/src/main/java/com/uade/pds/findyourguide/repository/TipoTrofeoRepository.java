@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface TipoTrofeoRepository extends JpaRepository<TipoTrofeo,Long> {
 
 
-    Optional<TipoTrofeo> findByNombre(String nombre);
+    Optional<TipoTrofeo> findByNombreTrofeo(String nombre);
 }

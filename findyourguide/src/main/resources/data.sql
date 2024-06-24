@@ -13,7 +13,13 @@ VALUES
     ('Musica de cuba', 'Los mejores artistas cubanos, salsa y habanos', 1, 66, 1,5),
     ( 'Alfajores Argentina', 'La mejor cata de alfajores', 1, 1000, 1,10);
 
-INSERT INTO TIPO_TROFEO(ID,DESCRIPCION,NOMBRE)
+
+
+
+INSERT INTO TIPO_TROFEO(ID,DESCRIPCION_TROFEO,NOMBRE_TROFEO)
 VALUES
-        (1,'El guia recibio mas de 10 reseñas con una puntuacion promedio superior a 4.5!','Trofeo al Exito'),
-        (2,'El usuario escribio mas de 10 reseñas!','Trofeo a la reseña')
+    (0,'El guia recibio mas de 10 reseñas con una puntuacion promedio superior a 4.5!','Trofeo al Exito'),
+    (1,'El usuario escribio mas de 10 reseñas!','Trofeo a la reseña');
+
+
+INSERT INTO TROFEO(ID,USUARIO_GANADOR_ID,TROFEO_OTORGADO_ID) VALUES (1,1,1);

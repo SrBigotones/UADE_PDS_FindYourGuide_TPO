@@ -16,9 +16,9 @@ public class TipoTrofeo {
     private long id;
 
     @Column(nullable = false)
-    private String nombre;
+    private String nombreTrofeo;
 
     @Column(nullable = false)
-    private String descripcion;
+    private String descripcionTrofeo;
 
 }

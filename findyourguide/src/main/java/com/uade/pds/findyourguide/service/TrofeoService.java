@@ -8,6 +8,8 @@ import com.uade.pds.findyourguide.repository.TipoTrofeoRepository;
 import com.uade.pds.findyourguide.repository.TrofeoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 @Service
 public class TrofeoService {
@@ -21,7 +23,7 @@ public class TrofeoService {
 
 
     public Trofeo otorgarTrofeo(Usuario usuarioGanador, String nombreTrofeo) {
-        Optional<TipoTrofeo> tipo_trofeo = tipoTrofeoRepository.findByNombre(nombreTrofeo);
+        Optional<TipoTrofeo> tipo_trofeo = tipoTrofeoRepository.findByNombreTrofeo(nombreTrofeo);
         if (tipo_trofeo.isEmpty()){
             return null;
         }
@@ -30,6 +32,11 @@ public class TrofeoService {
         trofeo.setUsuarioGanador(usuarioGanador);
 
         return trofeoRepository.save(trofeo);
+    }
+
+
+    public List<Trofeo> buscarTrofeos(Usuario usuarioBuscado) {
+        return trofeoRepository.findTrofeosByUsuarioGanador(usuarioBuscado);
     }
 
 
