@@ -52,10 +52,15 @@ public class TrofeoService {
         // Gana trofeo al exito por calificacion mayor a 4.5 en minimo 10 resenias
         List<Resenia> listaResenias = reseniasService.obtenerReseniasDeGuia(usuario.getId());
         Trofeo trofeoOtorgado = new Trofeo();
+        Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo al Exito");
+        //Ya gano el trofeo
+
+        boolean ganoElTrofeo = trofeoRepository.findByTrofeoOtorgadoAndUsuarioGanador(trofeo.get(),usuario).isPresent();
+
+        if (!ganoElTrofeo){
         if (listaResenias.size() >= 1) {
             OptionalDouble promedioResenias = listaResenias.stream().mapToDouble(resenia -> resenia.getCalificacion()).average();
             if (promedioResenias.isPresent() && promedioResenias.getAsDouble() >= 4.5) {
-                Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo al Exito");
                 if (trofeo.isPresent()){
                     trofeoOtorgado.setUsuarioGanador(usuario);
                     trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
@@ -64,23 +69,31 @@ public class TrofeoService {
                 }
 
             }
-        }
+        }}
+
         trofeoOtorgado = null;
         return  trofeoOtorgado;
+
     };
 
 
     public Trofeo ganoTrofeosResenias(Usuario usuario) {
         List<Resenia> listaResenias = reseniasService.obtenerReseniasDeUsuario(usuario);
         Trofeo trofeoOtorgado = new Trofeo();
+        Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo a la reseña");
+
+
+        boolean ganoElTrofeo = trofeoRepository.findByTrofeoOtorgadoAndUsuarioGanador(trofeo.get(),usuario).isPresent();
+
+        if (!ganoElTrofeo){
         if (listaResenias.size() >= 1) {
-            Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo a la reseña");
             if (trofeo.isPresent()){
                 trofeoOtorgado.setUsuarioGanador(usuario);
                 trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
                 trofeoRepository.save(trofeoOtorgado);
                 return  trofeoOtorgado;
             }
+        }
         }
         trofeoOtorgado = null;
         return  trofeoOtorgado;

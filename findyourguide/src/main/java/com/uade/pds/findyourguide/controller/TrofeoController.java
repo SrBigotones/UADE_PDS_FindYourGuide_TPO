@@ -46,10 +46,10 @@ public class TrofeoController {
         Trofeo trofeoResenias = trofeoService.ganoTrofeosResenias(usuario_turista);
 
         if (trofeoExito != null) {
-            System.out.printf("El usuario %s ha ganado un trofeo al exito!",trofeoExito.getUsuarioGanador().getNombre());
+            System.out.printf("El usuario %s ha ganado un trofeo al exito!",trofeoExito.getUsuarioGanador().getNombre()); // ESTO SERIA UNA PUSH
         }
         if (trofeoResenias != null) {
-            System.out.printf("El usuario %s ha ganado un trofeo a la resenia!",trofeoResenias.getUsuarioGanador().getNombre());
+            System.out.printf("El usuario %s ha ganado un trofeo a la resenia!",trofeoResenias.getUsuarioGanador().getNombre()); // ESTO SERIA UNA PUSH AL USUARIO
         }
     }
 
