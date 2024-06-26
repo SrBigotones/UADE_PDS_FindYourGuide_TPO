@@ -12,6 +12,7 @@ import com.uade.pds.findyourguide.repository.ContratoRepository;
 import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
 import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
 import com.uade.pds.findyourguide.repository.UsuarioRepository;
+import com.uade.pds.findyourguide.service.notificacion.NotificacionService;
 import org.hibernate.Session;
 import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class ContratoService {
     @Autowired private ContratoRepository contratoRepository;
     @Autowired private UsuarioGuiaService usuarioGuiaService;
     @Autowired private UsuarioService usuarioService;
+    @Autowired private NotificacionService notificacionService;
 
     public Contrato contratar(Contrato contrato) throws Exception{
 
@@ -41,6 +43,8 @@ public class ContratoService {
         contrato.setUsuarioContratante(usuario);
         contrato.setUsuarioContratado(usuarioGuia);
         contrato.setServicio(servicioGuia);
+
+        notificacionService.enviarNotificacion(usuarioGuia, "Se realizo una nueva reserva para el servicio " + contrato.getServicio().getNombre());
 
         if(this.checkDisponibilidad(contrato)){
             Contrato saved = contratoRepository.save(contrato);
@@ -55,11 +59,14 @@ public class ContratoService {
 
     public Contrato confirmarContrato(Contrato contrato) throws Exception {
         contrato.getStateContrato().aprobar(contrato);
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se confirmo el contrato para el servicio " + contrato.getServicio().getNombre());
         return contratoRepository.save(contrato);
     }
 
     public Contrato cancelarContrato(Contrato contrato) throws Exception {
         contrato.getStateContrato().cancelar(contrato);
+
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre());
         return contratoRepository.save(contrato);
     }
 

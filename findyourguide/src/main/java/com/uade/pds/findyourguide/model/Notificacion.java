@@ -5,6 +5,8 @@ import com.uade.pds.findyourguide.model.user.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 public class Notificacion {
@@ -15,4 +17,6 @@ public class Notificacion {
     private Usuario usuario;
     @Column
     private String mensaje;
+    @Column
+    private LocalDateTime timestamp;
 }
