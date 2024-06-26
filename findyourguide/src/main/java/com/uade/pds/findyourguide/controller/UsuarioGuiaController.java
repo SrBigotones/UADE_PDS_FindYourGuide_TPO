@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +47,20 @@ public class UsuarioGuiaController {
     }
     @GetMapping("/buscarAll")
     public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
-        return null;
+        List<UsuarioGuia> listaUsuariosGuia = usuarioGuiaService.buscarTodosLosGuias();
+
+        if (listaUsuariosGuia.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<GuiaDTO> listaGuiasDTO = new ArrayList<>();
+
+        for (UsuarioGuia usuarioGuia : listaUsuariosGuia) {
+            GuiaDTO usuarioGuiaDto = guiaToDTO(usuarioGuia);
+            listaGuiasDTO.add(usuarioGuiaDto);
+        }
+
+        return ResponseEntity.ok(listaGuiasDTO);
     }
 
     @PutMapping("/actualizar")

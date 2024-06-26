@@ -22,6 +22,7 @@ public class UsuarioGuiaService {
     public Optional<UsuarioGuia> buscarUsuarioGuia(long id){
         return usuarioGuiaRepository.findById(id);
     }
+    public List<UsuarioGuia> buscarTodosLosGuias(){return usuarioGuiaRepository.findAll();}
 
     public Optional<ServicioGuia> obtenerServicioPorId(long id){
         return servicioGuiaRepository.findById(id);
