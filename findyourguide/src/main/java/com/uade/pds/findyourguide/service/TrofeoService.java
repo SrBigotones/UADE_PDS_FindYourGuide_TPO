@@ -55,6 +55,7 @@ public class TrofeoService{
     public Trofeo ganoTrofeosExito(Usuario usuario) {
         // Gana trofeo al exito por calificacion mayor a 4.5 en minimo 10 resenias
         List<Resenia> listaResenias = reseniasService.obtenerReseniasDeGuia(usuario.getId());
+        System.out.println(listaResenias.size());
         Trofeo trofeoOtorgado = new Trofeo();
         Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo al Exito");
         //Ya gano el trofeo
@@ -69,6 +70,7 @@ public class TrofeoService{
                     trofeoOtorgado.setUsuarioGanador(usuario);
                     trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
                     trofeoRepository.save(trofeoOtorgado);
+                    System.out.println("Se otorga trofeo del exito");
                     return  trofeoOtorgado;
                 }
 
@@ -95,6 +97,7 @@ public class TrofeoService{
                 trofeoOtorgado.setUsuarioGanador(usuario);
                 trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
                 trofeoRepository.save(trofeoOtorgado);
+                System.out.println("Se otorga trofeo a la reseña");
                 return  trofeoOtorgado;
             }
         }

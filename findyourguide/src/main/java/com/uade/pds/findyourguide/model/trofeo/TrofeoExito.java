@@ -17,6 +17,6 @@ public class TrofeoExito extends CondicionTrofeo{
     @Override
     public void serNotificado(IObservable observable) {
         Resenia resenia = (Resenia)observable;
-        super.trofeoService.ganoTrofeosExito(resenia.getUsuarioTurista());
+        super.trofeoService.ganoTrofeosExito(resenia.getUsuarioGuia());
     }
 }

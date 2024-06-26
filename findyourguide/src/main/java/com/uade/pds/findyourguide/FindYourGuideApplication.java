@@ -20,6 +20,13 @@ public class FindYourGuideApplication {
 		resenia.agregar(trofeoExito);
 		return trofeoExito;
 	}
+	@Bean
+	@Autowired
+	public TrofeoResenia newObserverResenia(Resenia resenia){
+		TrofeoResenia trofeoExito = new TrofeoResenia();
+		resenia.agregar(trofeoExito);
+		return trofeoExito;
+	}
 	public static void main(String[] args) {
 
 		SpringApplication.run(FindYourGuideApplication.class, args);
