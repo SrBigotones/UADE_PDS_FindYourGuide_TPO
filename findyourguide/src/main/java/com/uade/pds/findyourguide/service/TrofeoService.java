@@ -6,6 +6,8 @@ import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.trofeo.TipoTrofeo;
 import com.uade.pds.findyourguide.model.trofeo.Trofeo;
 import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.observer.IObservable;
+import com.uade.pds.findyourguide.observer.IObserver;
 import com.uade.pds.findyourguide.repository.TipoTrofeoRepository;
 import com.uade.pds.findyourguide.repository.TrofeoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +18,19 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 
 @Service
-public class TrofeoService {
+public class TrofeoService{
 
 
-    @Autowired
-    private TrofeoRepository trofeoRepository;
 
-    @Autowired
-    private TipoTrofeoRepository tipoTrofeoRepository;
+    @Autowired private TrofeoRepository trofeoRepository;
 
-    @Autowired
-    private ReseniasService reseniasService;
+
+    @Autowired private TipoTrofeoRepository tipoTrofeoRepository;
+
+
+    @Autowired private ReseniasService reseniasService;
+
+
 
 
     public Trofeo otorgarTrofeo(Usuario usuarioGanador, String nombreTrofeo) {
@@ -98,7 +102,6 @@ public class TrofeoService {
         trofeoOtorgado = null;
         return  trofeoOtorgado;
     };
-
 
 
 }

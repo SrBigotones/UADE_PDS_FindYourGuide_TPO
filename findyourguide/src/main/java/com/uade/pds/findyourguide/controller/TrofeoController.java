@@ -39,20 +39,6 @@ public class TrofeoController {
 
 
 
-    public void verificarPremios(Resenia resenia) {
-        Usuario usuario_turista = resenia.getUsuarioTurista();
-        Optional<Usuario> usuario_guia = usuarioService.findUserById(resenia.getServicioContratado().getGuia_id());
-        Trofeo trofeoExito = trofeoService.ganoTrofeosExito(usuario_guia.get());
-        Trofeo trofeoResenias = trofeoService.ganoTrofeosResenias(usuario_turista);
-
-        if (trofeoExito != null) {
-            System.out.printf("El usuario %s ha ganado un trofeo al exito!",trofeoExito.getUsuarioGanador().getNombre()); // ESTO SERIA UNA PUSH
-        }
-        if (trofeoResenias != null) {
-            System.out.printf("El usuario %s ha ganado un trofeo a la resenia!",trofeoResenias.getUsuarioGanador().getNombre()); // ESTO SERIA UNA PUSH AL USUARIO
-        }
-    }
-
 
     @GetMapping(value = "/{usu_id}")
     public ResponseEntity<List<TrofeoDTO>> getTrofeos(@PathVariable("usu_id") long usuario_id) {
@@ -62,9 +48,7 @@ public class TrofeoController {
             return  new ResponseEntity("El usuario no existe!", HttpStatus.NO_CONTENT);
         List<Trofeo> trofeosEncontrados = trofeoService.buscarTrofeos(usuarioEncontrado.get());
         List<TrofeoDTO> trofeosDTO = trofeosEncontrados.stream()
-                .map(trofeo -> {
-                    return objectMapper.convertValue(trofeo, TrofeoDTO.class);
-                })
+                .map(this::toDTO)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(trofeosDTO);

@@ -1,12 +1,16 @@
 package com.uade.pds.findyourguide.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uade.pds.findyourguide.enums.EstadoUsuario;
+import com.uade.pds.findyourguide.model.Resenia;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
+
+import java.util.List;
 
 @Builder
 @Data
@@ -48,6 +52,11 @@ public class Usuario {
     @Column(name = "estado", nullable = false, length = 512)
     @Enumerated(EnumType.STRING)
     private EstadoUsuario estado;
+
+    @OneToMany
+    @JoinColumn(name = "usuario_turista_id")
+    @JsonIgnore
+    private List<Resenia> reseniaList;
 
     public boolean isActive() {
         return estado.equals(EstadoUsuario.ACTIVO);

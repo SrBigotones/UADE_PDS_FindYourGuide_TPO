@@ -1,7 +1,9 @@
 package com.uade.pds.findyourguide.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uade.pds.findyourguide.enums.Idioma;
 import com.uade.pds.findyourguide.model.CiudadPais;
+import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,6 +30,11 @@ public class UsuarioGuia extends Usuario {
 
     @ManyToMany()
     private List<CiudadPais> listaCiudadesActivo;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_guia_id")
+    @JsonIgnore
+    private List<Resenia> reseniaRecividaList;
 
 
 }
