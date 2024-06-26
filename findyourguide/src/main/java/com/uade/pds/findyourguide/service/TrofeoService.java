@@ -2,12 +2,16 @@ package com.uade.pds.findyourguide.service;
 
 
 import com.uade.pds.findyourguide.controller.dto.TrofeoDTO;
+import com.uade.pds.findyourguide.model.Notificacion;
 import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.trofeo.TipoTrofeo;
 import com.uade.pds.findyourguide.model.trofeo.Trofeo;
 import com.uade.pds.findyourguide.model.user.Usuario;
+import com.uade.pds.findyourguide.observer.IObservable;
+import com.uade.pds.findyourguide.observer.IObserver;
 import com.uade.pds.findyourguide.repository.TipoTrofeoRepository;
 import com.uade.pds.findyourguide.repository.TrofeoRepository;
+import com.uade.pds.findyourguide.service.notificacion.NotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +20,16 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 
 @Service
-public class TrofeoService {
+public class TrofeoService{
 
 
-    @Autowired
-    private TrofeoRepository trofeoRepository;
 
-    @Autowired
-    private TipoTrofeoRepository tipoTrofeoRepository;
+    @Autowired private TrofeoRepository trofeoRepository;
+    @Autowired private TipoTrofeoRepository tipoTrofeoRepository;
+    @Autowired private ReseniasService reseniasService;
+    @Autowired private NotificacionService notificacionService;
 
-    @Autowired
-    private ReseniasService reseniasService;
+
 
 
     public Trofeo otorgarTrofeo(Usuario usuarioGanador, String nombreTrofeo) {
@@ -51,6 +54,7 @@ public class TrofeoService {
     public Trofeo ganoTrofeosExito(Usuario usuario) {
         // Gana trofeo al exito por calificacion mayor a 4.5 en minimo 10 resenias
         List<Resenia> listaResenias = reseniasService.obtenerReseniasDeGuia(usuario.getId());
+        System.out.println(listaResenias.size());
         Trofeo trofeoOtorgado = new Trofeo();
         Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo al Exito");
         //Ya gano el trofeo
@@ -65,6 +69,10 @@ public class TrofeoService {
                     trofeoOtorgado.setUsuarioGanador(usuario);
                     trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
                     trofeoRepository.save(trofeoOtorgado);
+
+                    this.enviarNotificacionAUsuario(usuario, "Usted gano el trofeo al exito! Felicitaciones!");
+
+                    System.out.println("Se otorga trofeo del exito");
                     return  trofeoOtorgado;
                 }
 
@@ -91,6 +99,8 @@ public class TrofeoService {
                 trofeoOtorgado.setUsuarioGanador(usuario);
                 trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
                 trofeoRepository.save(trofeoOtorgado);
+                this.enviarNotificacionAUsuario(usuario, "Usted gano el trofeo a la reseña! Felicitaciones!");
+                System.out.println("Se otorga trofeo a la reseña");
                 return  trofeoOtorgado;
             }
         }
@@ -99,6 +109,10 @@ public class TrofeoService {
         return  trofeoOtorgado;
     };
 
+
+    private void enviarNotificacionAUsuario(Usuario usuario, String mensaje){
+        notificacionService.enviarNotificacion(usuario, mensaje);
+    }
 
 
 }

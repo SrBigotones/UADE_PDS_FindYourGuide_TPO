@@ -8,6 +8,7 @@ import lombok.Data;
 public class ReseniaDTO {
     private long id;
     private UsuarioDTO usuarioTurista;
+    private UsuarioDTO usuarioGuia;
     private ServicioGuiaDTO servicioContratado;
     private short calificacion;
     private String comentario;

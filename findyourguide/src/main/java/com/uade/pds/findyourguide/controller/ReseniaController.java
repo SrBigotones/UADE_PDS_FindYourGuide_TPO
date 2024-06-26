@@ -2,6 +2,7 @@ package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.ReseniaDTO;
+import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.ServicioGuia;
@@ -42,36 +43,22 @@ public class ReseniaController {
     @Autowired
     private ContratoService contratoService;
 
-    @Autowired
-    private UsuarioService usuarioService;
 
-    @Autowired
-    private  TrofeoController trofeoController;
 
-    private static final long DIAS_FINALIZADO = 5;
 
-    //@Scheduled(fixedRate = 5000)
-    @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
-    public void buscarPendientesResenias() {
-        LocalDate fechaObjetivo = LocalDate.now().minusDays(DIAS_FINALIZADO);
-        List<Contrato> contratosEncontrados = contratoService.obtenerContratosConFechaFin(fechaObjetivo);
-        for (Contrato c : contratosEncontrados) {
-            Optional<Usuario> usuarioEncontrado = usuarioService.findUserById(c.getUsuarioContratante().getId());
-            // ACA LE AVISAMOS AL MAIL POR ACCION DIVINA
-            usuarioEncontrado.ifPresent(usuario -> System.out.println(usuario.getEmail()));
-        }
-    }
 
 
     @GetMapping(value = "/guia/{id}")
     public ResponseEntity<List<ReseniaDTO>> obtenerReseniaPorGuia(@PathVariable long id){
         List<Resenia> reseniasEncontradas = reseniasService.obtenerReseniasDeGuia(id);
-        List<ReseniaDTO> reseniasDTO = reseniasEncontradas.stream()
-                .map(resenia -> {
-                    return objectMapper.convertValue(resenia, ReseniaDTO.class);
-                })
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(reseniasDTO);
+//        List<ReseniaDTO> reseniasDTO = reseniasEncontradas.stream()
+//                .map(resenia -> {
+//                    return objectMapper.convertValue(resenia, ReseniaDTO.class);
+//                })
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(reseniasDTO);
+
+        return ResponseEntity.ok(null);
 
     }
 
@@ -80,22 +67,27 @@ public class ReseniaController {
     public ResponseEntity escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
         // Nos genera la reseña
         Resenia reseniaRecibida = toResenia(reseniaDTO);
+
+
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
 
-        if (!reseniasService.yaHizoResenia(usuario,reseniaRecibida.getServicioContratado())) {
 
-        reseniaRecibida.setServicioContratado(usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get());
-        reseniaRecibida.setUsuarioTurista(usuario);
-        // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
-        List<Contrato> contratosEncontrados = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
-        if (contratosEncontrados.isEmpty())
-            return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio o no fue concluido.", HttpStatus.FORBIDDEN);
-        else {
-            Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
-            ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
-            trofeoController.verificarPremios(reseniaSaved);
-            return ResponseEntity.ok(reseniaDTO1);
-        }}
+        if (!reseniasService.yaHizoResenia(usuario,reseniaRecibida.getServicioContratado())) {
+            ServicioGuia servicioGuia =usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get();
+            reseniaRecibida.setServicioContratado(servicioGuia);
+            reseniaRecibida.setUsuarioTurista(usuario);
+            reseniaRecibida.setUsuarioGuia(usuarioGuiaService.buscarUsuarioGuia(servicioGuia.getGuia_id()).get());
+            // Nos fijamos si la persona que hizo la reseña tuvo un contrato con ese servicio.
+            List<Contrato> contratosEncontrados = contratoService.obtenerContratoPorServicioYGuia(reseniaRecibida.getServicioContratado(),reseniaRecibida.getUsuarioTurista());
+            if (contratosEncontrados.isEmpty()) {
+                return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio o no fue concluido.", HttpStatus.FORBIDDEN);
+            }else{
+                Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
+                System.out.println(reseniaSaved.getUsuarioGuia());
+                ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
+                return ResponseEntity.ok(reseniaDTO1);
+            }
+        }
         else {
             return new ResponseEntity("No se puede realizar la reseña ya que ya se reseño el servicio.",HttpStatus.FORBIDDEN);
         }
@@ -103,11 +95,11 @@ public class ReseniaController {
 
 
 
-
-
-
     private ReseniaDTO toDTO(Resenia resenia){
         ReseniaDTO reseniaDTO = objectMapper.convertValue(resenia, ReseniaDTO.class);
+
+        reseniaDTO.setUsuarioGuia(this.usuarioToDTO(resenia.getUsuarioGuia()));
+        reseniaDTO.setUsuarioTurista(this.usuarioToDTO(resenia.getUsuarioTurista()));
         return reseniaDTO;
     }
 
@@ -115,5 +107,12 @@ public class ReseniaController {
     private Resenia toResenia(ReseniaDTO reseniaDTO){
         Resenia resenia = objectMapper.convertValue(reseniaDTO, Resenia.class);
         return resenia;
+    }
+
+    private UsuarioDTO usuarioToDTO(Usuario usuario){
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setEmail(usuario.getEmail());
+
+        return usuarioDTO;
     }
 }

@@ -34,6 +34,7 @@ public class ContratoController {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         Contrato contrato = this.dtoToContrato(contratoDTO);
         contrato.setUsuarioContratante(usuario);
+        contrato.setEstadoContrato(EstadoContrato.CONCLUIDO);
 
         Contrato contratoSaved = null;
         try {
