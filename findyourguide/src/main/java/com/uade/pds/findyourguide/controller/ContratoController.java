@@ -34,7 +34,7 @@ public class ContratoController {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         Contrato contrato = this.dtoToContrato(contratoDTO);
         contrato.setUsuarioContratante(usuario);
-        contrato.setEstadoContrato(EstadoContrato.CONCLUIDO);
+        contrato.setEstadoContrato(EstadoContrato.RESERVA);
 
         Contrato contratoSaved = null;
         try {
@@ -47,17 +47,6 @@ public class ContratoController {
 
     }
 
-    @PostMapping("/{contratoId}/abonar")
-    public ResponseEntity abonarContrato(@PathVariable long contratoId, @RequestBody Double importe, Authentication authentication) throws Exception {
-        Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
-        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
-
-        this.verificarPermisoUsuarioContrante(contrato, usuario);
-
-        Contrato saved = contratoService.pagarContrato(contrato, importe);
-        ContratoDTO contratoDTO = this.contratoToDTO(saved);
-        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
-    }
 
     @PostMapping("/{contratoId}/cancelar")
     public ResponseEntity cancelarContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
@@ -67,14 +56,18 @@ public class ContratoController {
 
         try {
             this.verificarPermisoUsuarioContrante(contrato, usuario);
+            Contrato saved = contratoService.cancelarContratoPorTurista(contrato);
+
+            ContratoDTO contratoDTO = this.contratoToDTO(saved);
+            return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
         }catch (Exception e){
             this.verificarPermisoUsuarioContrado(contrato, usuario);
+            Contrato saved = contratoService.cancelarContratoPorGuia(contrato);
+
+            ContratoDTO contratoDTO = this.contratoToDTO(saved);
+            return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
         }
 
-        Contrato saved = contratoService.cancelarContrato(contrato);
-
-        ContratoDTO contratoDTO = this.contratoToDTO(saved);
-        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
     }
 
     @PostMapping("/{contratoId}/confirmar")
@@ -86,6 +79,20 @@ public class ContratoController {
         this.verificarPermisoUsuarioContrado(contrato, usuario);
 
         Contrato saved = contratoService.confirmarContrato(contrato);
+
+        ContratoDTO contratoDTO = this.contratoToDTO(saved);
+        return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/{contratoId}/concluir")
+    public ResponseEntity concluirContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
+        Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
+
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+
+        this.verificarPermisoUsuarioContrado(contrato, usuario);
+
+        Contrato saved = contratoService.concluirContrato(contrato);
 
         ContratoDTO contratoDTO = this.contratoToDTO(saved);
         return new ResponseEntity<>(contratoDTO, HttpStatus.OK);
@@ -114,7 +121,6 @@ public class ContratoController {
     private Contrato dtoToContrato(ContratoDTO contratoDTO){
 
         Contrato contrato = new Contrato();
-        contrato.setImporte(contratoDTO.getImporte());
         contrato.setFechaIni(LocalDate.parse(contratoDTO.getFechaIni()));
         contrato.setFechaFin(LocalDate.parse(contratoDTO.getFechaFin()));
         contrato.setUsuarioContratado(this.usuarioDtoToUsuarioGuia(contratoDTO.getUsuarioGuia()));
@@ -163,7 +169,6 @@ public class ContratoController {
         contratoDTO.setFechaIni(contrato.getFechaIni().toString());
         contratoDTO.setFechaFin(contrato.getFechaFin().toString());
         contratoDTO.setEstado(contrato.getEstadoContrato());
-        contratoDTO.setImporte(contrato.getImporte());
 
         contratoDTO.setUsuarioContratante(this.usuarioToDTO(contrato.getUsuarioContratante()));
         contratoDTO.setUsuarioGuia(this.usuarioToDTO(contrato.getUsuarioContratado()));

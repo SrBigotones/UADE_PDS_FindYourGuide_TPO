@@ -14,7 +14,6 @@ public class ContratoDTO {
     private Long idContrato;
     private String fechaIni;
     private String fechaFin;
-    private double importe;
     private EstadoContrato estado;
     private ServicioGuiaDTO servicio;
     private UsuarioDTO usuarioContratante;

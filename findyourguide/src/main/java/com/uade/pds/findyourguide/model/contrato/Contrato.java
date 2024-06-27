@@ -40,8 +40,6 @@ public class Contrato {
     @Column
     private LocalDate fechaFin;
     @Column
-    private double importe;
-    @Column
     private EstadoContrato estadoContrato;
 
     @JsonIgnore

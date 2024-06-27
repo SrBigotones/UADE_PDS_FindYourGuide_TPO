@@ -4,10 +4,7 @@ import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 
 public class StateContratoConcluido implements IStateContrato{
-    @Override
-    public void pagar(Contrato contrato, double importe) throws Exception {
-        throw new Exception("No es posible pagar un contrato concluido");
-    }
+
 
     @Override
     public void cancelar(Contrato contrato) throws Exception{
@@ -20,8 +17,13 @@ public class StateContratoConcluido implements IStateContrato{
     }
 
     @Override
-    public void realizarReserva(Contrato contrato) throws Exception{
+    public void reservar(Contrato contrato) throws Exception{
         throw new Exception("No es posible reservar un contrato concluido");
+    }
+
+    @Override
+    public void concluir(Contrato contrato) throws Exception {
+        throw new Exception("No es posible concluir un contrato ya concluido");
     }
 
 
