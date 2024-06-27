@@ -14,10 +14,9 @@ VALUES
     ( 'Alfajores Argentina', 'La mejor cata de alfajores', 1, 1000, 1,10);
 
 
-
-
 INSERT INTO TIPO_TROFEO(ID,DESCRIPCION_TROFEO,NOMBRE_TROFEO)
 VALUES
     (0,'El guia recibio mas de 10 reseñas con una puntuacion promedio superior a 4.5!','Trofeo al Exito'),
     (1,'El usuario escribio mas de 10 reseñas!','Trofeo a la reseña');
 
+INSERT INTO CONTRATO VALUES (0, '2024-01-03', '2023-01-01', null, 1,1,1,2)

@@ -69,6 +69,7 @@ public class ContratoService {
 
         return contratoRepository.save(contrato);
     }
+
     public Contrato confirmarContrato(Contrato contrato) throws Exception {
         contrato.getStateContrato().aprobar(contrato);
 
