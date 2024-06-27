@@ -40,10 +40,24 @@ public class UsuarioGuiaController {
         return ResponseEntity.ok(guiaToDTO(usuarioGuia.get()));
     }
     @GetMapping("/buscarAll")
-    public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
+    public ResponseEntity<List<GuiaDTO>> buscarGuia(){
         List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
+
         return ResponseEntity.ok(dtos);
     }
+
+    @PostMapping("/buscarAll/filtro")
+    public ResponseEntity<List<GuiaDTO>> buscarGuiaFiltro(@RequestBody GuiaDTO guiaDTO){
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
 
     @PutMapping("/actualizar")
     public void actualizar(GuiaDTO guiaDTO) {
@@ -72,6 +86,20 @@ public class UsuarioGuiaController {
 //        guiaDTO.setUbicaciones();
 
         return guiaDTO;
+    }
+
+
+    private UsuarioGuia dtoToUsuario(GuiaDTO dto){
+        UsuarioGuia usuarioGuia = new UsuarioGuia();
+
+        usuarioGuia.setIdiomas(dto.getIdiomas());
+        usuarioGuia.setPuntuacion(dto.getPuntuacion());
+        usuarioGuia.setNombre(dto.getNombre());
+        usuarioGuia.setApellido(dto.getApellido());
+
+
+        return usuarioGuia;
+
     }
 
 

@@ -33,7 +33,10 @@ public class FlujoReservaTest {
         // TURISTA
         testHelper.loguearUsuario("turista@gmail.com", "pass1");
 
-        List<GuiaDTO> guias = buscarGuias();
+        GuiaDTO guiaDTO = new GuiaDTO();
+        guiaDTO.setNombre("Pepe");
+        guiaDTO.setPuntuacion(0);
+        List<GuiaDTO> guias = buscarGuias(guiaDTO);
 
         ContratoDTO contratoDTO = solicitarServicio(guias.get(0));
 
@@ -74,15 +77,14 @@ public class FlujoReservaTest {
 
     }
 
-    private List<GuiaDTO> buscarGuias() throws JsonProcessingException {
+    private List<GuiaDTO> buscarGuias(GuiaDTO guiaDTO) throws JsonProcessingException {
         TestHelper testHelper = TestHelper.getInstance(restTemplate, port);
 
-        // TODO usar filtros
-        String ruta = "/guia/buscarAll";
-        ResponseEntity<List<GuiaDTO>> responseGuias = testHelper.sendRequest(ruta, HttpMethod.GET, null, new ParameterizedTypeReference<List<GuiaDTO>>(){});
+        String ruta = "/guia/buscarAll/filtro";
+        ResponseEntity<List<GuiaDTO>> responseGuias = testHelper.sendRequest(ruta, HttpMethod.POST, guiaDTO, new ParameterizedTypeReference<List<GuiaDTO>>(){});
         assertEquals(HttpStatus.OK, responseGuias.getStatusCode());
         assertTrue(responseGuias.getBody().size() > 0);
-
+        assertEquals(responseGuias.getBody().get(0).getNombre(), guiaDTO.getNombre());
         return responseGuias.getBody();
     }
 
