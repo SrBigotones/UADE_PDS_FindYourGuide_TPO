@@ -21,9 +21,6 @@ public class UsuarioGuia extends Usuario {
     @Column(name = "puntuacion")
     private int puntuacion;
 
-    @ElementCollection(targetClass = Idioma.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "usuario_guia_idiomas", joinColumns = @JoinColumn(name = "usuario_guia_id"))
     @Column(name = "idiomas")
     private List<Idioma> idiomas;
 

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UsuarioGuiaRepository extends JpaRepository<UsuarioGuia, Long>, JpaSpecificationExecutor<UsuarioGuia> {
+public interface UsuarioGuiaRepository extends JpaRepository<UsuarioGuia, Long> {
 
 }
