@@ -48,7 +48,7 @@ public class TestHelper {
         return restTemplate.exchange(createURLWithPort(ruta), httpMethod, entity, responseType);
     }
 
-    public void loguearUsuario(String email, String password) throws JsonProcessingException {
+    public ResponseEntity<String> loguearUsuario(String email, String password) throws JsonProcessingException {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setEmail(email);
         dto.setPassword(password);
@@ -56,10 +56,11 @@ public class TestHelper {
         String route = "/login";
         //ResponseEntity<String> responseRegister = restTemplate.exchange(createURLWithPort(route), HttpMethod.POST, entity, String.class);
         ResponseEntity<String> responseRegister = sendRequest(route, HttpMethod.POST, dto, String.class);
-        assertEquals(HttpStatus.OK, responseRegister.getStatusCode());
 
         String responseToken = responseRegister.getBody();
 
         headers.setBearerAuth(responseToken);
+
+        return responseRegister;
     }
 }
