@@ -11,7 +11,9 @@ import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.repository.CiudadPaisRepository;
 import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
 import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
+import com.uade.pds.findyourguide.repository.specifications.UsuarioGuiaSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,18 +33,20 @@ public class UsuarioGuiaService {
     }
     public List<UsuarioGuia> buscarTodosLosGuias(){return usuarioGuiaRepository.findAll();}
 
-    public List<UsuarioGuia> buscarGuiasFiltradas(String ciudad, String pais, String nombre, String apellido, List<Idioma> idiomas, List<TipoServicio>servicios, int puntuacion){
-        CiudadPais ciudadPais = ciudadPaisRepository.findById(1L).get();
+    public List<UsuarioGuia> buscarGuiasFiltradas(String pais, String ciudad, String nombre, String apellido, List<TipoServicio>servicios, List<Idioma> idiomas,  Integer puntuacion){
 
-        List<UsuarioGuia> usuarioGuiaList =  usuarioGuiaRepository.findByNombreAndApellidoAndIdiomasInAndListServiciosTipoServicioAndPuntuacionAndListaCiudadesActivo_CiudadAndListaCiudadesActivo_Pais(nombre, apellido, idiomas,servicios,puntuacion, ciudad, pais);
-        /*List<UsuarioGuia> response = new ArrayList<>();
-        for (UsuarioGuia usuarioGuia: usuarioGuiaList
-             ) {
-            if(usuarioGuia.getListaCiudadesActivo().contains(ciudad) || usuarioGuia.getListaCiudadesActivo().contains(pais)){
-                response.add(usuarioGuia);
-            }
-        }*/
-        return usuarioGuiaList;
+        List<Specification<UsuarioGuia>> specs = new ArrayList<>();
+        if (nombre != null) specs.add(UsuarioGuiaSpecifications.hasNombre(nombre));
+        if (apellido != null) specs.add(UsuarioGuiaSpecifications.hasApellido(apellido));
+        if (ciudad != null) specs.add(UsuarioGuiaSpecifications.hasCiudad(ciudad));
+        if (pais != null) specs.add(UsuarioGuiaSpecifications.hasPais(pais));
+        if (idiomas != null && !idiomas.isEmpty()) specs.add(UsuarioGuiaSpecifications.hasIdiomas(idiomas));
+        if (servicios != null && !servicios.isEmpty()) specs.add(UsuarioGuiaSpecifications.hasTipoServicio(servicios));
+        if (puntuacion != null) specs.add(UsuarioGuiaSpecifications.hasPuntuacion(puntuacion));
+
+        Specification<UsuarioGuia> combinedSpec = specs.stream().reduce(Specification::and).orElse(null);
+
+        return usuarioGuiaRepository.findAll(combinedSpec);
     }
 
     public Optional<ServicioGuia> obtenerServicioPorId(long id){

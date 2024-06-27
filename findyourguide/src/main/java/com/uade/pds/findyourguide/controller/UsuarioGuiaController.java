@@ -48,27 +48,19 @@ public class UsuarioGuiaController {
                                                     @RequestParam(required = false) String nombre,
                                                     @RequestParam(required = false) String apellido,
                                                     @RequestParam(required = false) List<TipoServicio> servicios,
-                                                    @RequestParam(required = false, defaultValue = "0") int puntuacion,
-                                                    @RequestParam(required = false) List<Idioma> idiomas){
-        List<UsuarioGuia> listaUsuariosGuia = new ArrayList<>();
-        if((ciudad == null) && (pais == null) && (idiomas == null) && (servicios == null) && (puntuacion == 0) && (nombre == null) && (apellido == null)) {
-            listaUsuariosGuia = usuarioGuiaService.buscarTodosLosGuias();
-        } else {
-            listaUsuariosGuia =  usuarioGuiaService.buscarGuiasFiltradas(ciudad, pais, nombre, apellido, idiomas, servicios, puntuacion);
+                                                    @RequestParam(required = false) List<Idioma> idiomas,
+                                                    @RequestParam(required = false) Integer puntuacion){
+
+        List<UsuarioGuia> listaUsuariosGuia = usuarioGuiaService.buscarGuiasFiltradas(nombre, apellido, ciudad, pais, servicios, idiomas, puntuacion);
+
+        List<GuiaDTO> listaGuiaDTO = new ArrayList<>();
+        for (UsuarioGuia usuarioGuia: listaUsuariosGuia
+             ) {
+            GuiaDTO guiaDTO = guiaToDTO(usuarioGuia);
+            listaGuiaDTO.add(guiaDTO);
         }
 
-        if (listaUsuariosGuia.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        List<GuiaDTO> listaGuiasDTO = new ArrayList<>();
-
-        for (UsuarioGuia usuarioGuia : listaUsuariosGuia) {
-            GuiaDTO usuarioGuiaDto = guiaToDTO(usuarioGuia);
-            listaGuiasDTO.add(usuarioGuiaDto);
-        }
-
-        return ResponseEntity.ok(listaGuiasDTO);
+        return ResponseEntity.ok(listaGuiaDTO);
     }
 
     @PutMapping("/actualizar")
