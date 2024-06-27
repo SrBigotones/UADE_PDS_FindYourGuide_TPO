@@ -1,7 +1,7 @@
 package com.uade.pds.findyourguide.tp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.uade.pds.findyourguide.TestHelper;
+import com.uade.pds.findyourguide.tp.TestHelper;
 import com.uade.pds.findyourguide.controller.dto.ReseniaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.model.trofeo.Trofeo;
