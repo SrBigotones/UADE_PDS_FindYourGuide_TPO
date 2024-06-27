@@ -13,5 +13,5 @@ import java.util.List;
 
 @Repository
 public interface UsuarioGuiaRepository extends JpaRepository<UsuarioGuia, Long> {
-    List<UsuarioGuia> findByNombreAndApellidoAndIdiomasAndListServiciosAndPuntuacion(String nombre,String apellido, List<Idioma> idiomas, List<TipoServicio> servicios, int puntuacion);
+    List<UsuarioGuia> findByNombreAndApellidoAndIdiomasInAndListServiciosTipoServicioAndPuntuacionAndListaCiudadesActivo_CiudadAndListaCiudadesActivo_Pais(String nombre,String apellido, List<Idioma> idiomas, List<TipoServicio> servicios, int puntuacion, String ciudad, String pais);
 }

@@ -34,15 +34,15 @@ public class UsuarioGuiaService {
     public List<UsuarioGuia> buscarGuiasFiltradas(String ciudad, String pais, String nombre, String apellido, List<Idioma> idiomas, List<TipoServicio>servicios, int puntuacion){
         CiudadPais ciudadPais = ciudadPaisRepository.findById(1L).get();
 
-        List<UsuarioGuia> usuarioGuiaList =  usuarioGuiaRepository.findByNombreAndApellidoAndIdiomasAndListServiciosAndPuntuacion(nombre, apellido, idiomas,servicios,puntuacion);
-        List<UsuarioGuia> response = new ArrayList<>();
+        List<UsuarioGuia> usuarioGuiaList =  usuarioGuiaRepository.findByNombreAndApellidoAndIdiomasInAndListServiciosTipoServicioAndPuntuacionAndListaCiudadesActivo_CiudadAndListaCiudadesActivo_Pais(nombre, apellido, idiomas,servicios,puntuacion, ciudad, pais);
+        /*List<UsuarioGuia> response = new ArrayList<>();
         for (UsuarioGuia usuarioGuia: usuarioGuiaList
              ) {
             if(usuarioGuia.getListaCiudadesActivo().contains(ciudad) || usuarioGuia.getListaCiudadesActivo().contains(pais)){
                 response.add(usuarioGuia);
             }
-        }
-        return response;
+        }*/
+        return usuarioGuiaList;
     }
 
     public Optional<ServicioGuia> obtenerServicioPorId(long id){
