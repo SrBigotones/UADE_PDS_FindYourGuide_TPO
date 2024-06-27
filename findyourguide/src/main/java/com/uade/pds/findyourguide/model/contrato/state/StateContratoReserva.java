@@ -1,7 +1,10 @@
 package com.uade.pds.findyourguide.model.contrato.state;
 
 import com.uade.pds.findyourguide.enums.EstadoContrato;
+import com.uade.pds.findyourguide.model.Chat;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
+
+import java.util.UUID;
 
 public class StateContratoReserva implements IStateContrato{
 
@@ -14,6 +17,10 @@ public class StateContratoReserva implements IStateContrato{
     @Override
     public void aprobar(Contrato contrato) {
         contrato.setEstadoContrato(EstadoContrato.ACEPTADO);
+        Chat chat = new Chat();
+        //MOCK
+        chat.setCanalSendBird(UUID.randomUUID().toString());
+        contrato.setChat(chat);
         contrato.cambiarEstado(new StateContratoAceptado());
     }
 

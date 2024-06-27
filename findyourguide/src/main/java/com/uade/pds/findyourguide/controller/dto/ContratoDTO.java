@@ -18,4 +18,5 @@ public class ContratoDTO {
     private ServicioGuiaDTO servicio;
     private UsuarioDTO usuarioContratante;
     private UsuarioDTO usuarioGuia;
+    private ChatDTO chat;
 }
