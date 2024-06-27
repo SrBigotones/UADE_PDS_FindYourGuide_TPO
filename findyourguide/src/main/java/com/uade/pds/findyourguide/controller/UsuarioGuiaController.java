@@ -57,13 +57,6 @@ public class UsuarioGuiaController {
         return ResponseEntity.ok(dtos);
     }
 
-
-
-    @PutMapping("/actualizar")
-    public void actualizar(GuiaDTO guiaDTO) {
-
-    }
-
     @PostMapping("/servicio")
     public ResponseEntity<Void> publicarServicio(@RequestBody ServicioGuiaDTO servicioGuiaDTO, Authentication authentication) {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
