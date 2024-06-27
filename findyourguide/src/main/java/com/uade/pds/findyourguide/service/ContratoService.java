@@ -3,6 +3,7 @@ package com.uade.pds.findyourguide.service;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.enums.EstadoFactura;
 import com.uade.pds.findyourguide.enums.MetodoNotificacion;
+import com.uade.pds.findyourguide.model.CiudadPais;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.user.Usuario;
@@ -139,12 +140,33 @@ public class ContratoService {
                 .stream().filter(ctr -> ctr.getEstadoContrato() != EstadoContrato.CANCELADO && ctr.getEstadoContrato() != EstadoContrato.CONCLUIDO)
                 .toList();
 
-
+        //Aca pregunto por cupo
         int registrados = contratoList.size();
-
         if(registrados >= contrato.getServicio().getCupo()){
             return false;
         }
+
+
+
+
+        //Aca pregunto po por disponibilidad
+
+        List<Contrato> contratoListCiudad = contratoRepository
+                .findContratoByFechaIniIsGreaterThanEqualAndFechaFinIsLessThanEqual(contrato.getFechaIni(), contrato.getFechaFin())
+                .stream().filter(ctr -> ctr.getEstadoContrato() != EstadoContrato.CANCELADO && ctr.getEstadoContrato() != EstadoContrato.CONCLUIDO)
+                .toList();
+        CiudadPais ciudadPais = contrato.getServicio().getCiudadPais();
+        System.out.println(ciudadPais);
+
+        List<Contrato> contratosConPaisDistinto = contratoListCiudad.stream().filter(x -> x.getServicio().getCiudadPais().getId() != ciudadPais.getId()).toList();
+        System.out.println(contratosConPaisDistinto.size());
+
+        if(contratosConPaisDistinto.size() > 0){
+            //Significa que en el tiempo establecido el Guia se encuentra en otro lugar, no es posible concretar el tour
+            return false;
+        }
+
+
 
         return true;
     }
