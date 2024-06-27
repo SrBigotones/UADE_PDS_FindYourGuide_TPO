@@ -5,9 +5,11 @@ import com.uade.pds.findyourguide.model.contrato.Contrato;
 
 public interface IStateContrato {
 
-    void pagar(Contrato contrato, double importe) throws Exception;
     void cancelar(Contrato contrato) throws Exception;
     void aprobar(Contrato contrato) throws Exception;
-    void realizarReserva(Contrato contrato) throws Exception;
+    void reservar(Contrato contrato) throws Exception;
+
+    void concluir(Contrato contrato) throws Exception;
+
 
 }

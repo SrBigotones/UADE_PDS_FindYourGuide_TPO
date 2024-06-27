@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
+import com.uade.pds.findyourguide.model.Chat;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.state.*;
 import com.uade.pds.findyourguide.model.user.Usuario;
@@ -40,9 +41,11 @@ public class Contrato {
     @Column
     private LocalDate fechaFin;
     @Column
-    private double importe;
-    @Column
     private EstadoContrato estadoContrato;
+
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Chat chat;
 
     @JsonIgnore
     @Transient

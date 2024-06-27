@@ -1,6 +1,8 @@
 package com.uade.pds.findyourguide.service;
 
 import com.uade.pds.findyourguide.enums.EstadoContrato;
+import com.uade.pds.findyourguide.enums.EstadoFactura;
+import com.uade.pds.findyourguide.enums.MetodoNotificacion;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.contrato.state.StateContratoAceptado;
@@ -32,6 +34,10 @@ public class ContratoService {
     @Autowired private UsuarioGuiaService usuarioGuiaService;
     @Autowired private UsuarioService usuarioService;
     @Autowired private NotificacionService notificacionService;
+    @Autowired private FacturaService facturaService;
+
+
+    private static final int PORCENTAJE_RESERVA = 40;
 
     public Contrato contratar(Contrato contrato) throws Exception{
 
@@ -44,7 +50,7 @@ public class ContratoService {
         contrato.setUsuarioContratado(usuarioGuia);
         contrato.setServicio(servicioGuia);
 
-        notificacionService.enviarNotificacion(usuarioGuia, "Se realizo una nueva reserva para el servicio " + contrato.getServicio().getNombre());
+        notificacionService.enviarNotificacion(usuarioGuia, "Se realizo una nueva reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
 
         if(this.checkDisponibilidad(contrato)){
             Contrato saved = contratoRepository.save(contrato);
@@ -57,26 +63,60 @@ public class ContratoService {
 
     }
 
+    public Contrato concluirContrato(Contrato contrato) throws Exception {
+        contrato.getStateContrato().concluir(contrato);
+        facturaService.generarFactura(contrato, "Se concluye el contrato con exito", contrato.getServicio().getPrecio());
+
+        return contratoRepository.save(contrato);
+    }
     public Contrato confirmarContrato(Contrato contrato) throws Exception {
         contrato.getStateContrato().aprobar(contrato);
-        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se confirmo el contrato para el servicio " + contrato.getServicio().getNombre());
+
+        double importe = contrato.getServicio().getPrecio() * PORCENTAJE_RESERVA;
+        importe /= 100;
+        facturaService.generarFactura(contrato, "Confirmada la reserva", importe);
+
+
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se confirmo el contrato para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
 
-    public Contrato cancelarContrato(Contrato contrato) throws Exception {
+    public Contrato cancelarContratoPorGuia(Contrato contrato) throws Exception {
         contrato.getStateContrato().cancelar(contrato);
 
-        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre());
+        var facturaReserva = facturaService.obtenerFacturasPorUsuario(contrato.getUsuarioContratante())
+                .stream().filter(factura -> factura.getContrato() == contrato).toList().getFirst();
+        
+        
+        if(facturaReserva.getEstadoFactura() == EstadoFactura.ABONADO){
+            var factDevolucion =facturaService.generarFactura(contrato, "Se devuelve el pago por su reserva",-(facturaReserva.getImporte()));
+            facturaService.abonar(factDevolucion);
+        } else if (facturaReserva.getEstadoFactura() == EstadoFactura.PENDIENTE) {
+            facturaService.revocar(facturaReserva);
+        }
+
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
 
-    public Contrato pagarContrato(Contrato contrato, double importeAPagar) throws Exception{
+    public Contrato cancelarContratoPorTurista(Contrato contrato) throws Exception {
 
-        var stateContrato = contrato.getStateContrato();
-        stateContrato.pagar(contrato, importeAPagar);
+        var facturaReserva = facturaService.obtenerFacturasPorUsuario(contrato.getUsuarioContratante())
+                .stream().filter(factura -> factura.getContrato() == contrato).toList().getFirst();
 
+        EstadoContrato estadoContrato = contrato.getEstadoContrato();
+        contrato.getStateContrato().cancelar(contrato);
+        if(estadoContrato == EstadoContrato.ACEPTADO && contrato.getFechaIni().isBefore(LocalDate.now())){
+            //Se le cobra la totalidad del servicio al turista
+            facturaService.generarFactura(contrato, "Se cancela un contrato ya aceptado y durante la fecha del viaje, se procede a cobrar la totalidad del servicio", contrato.getServicio().getPrecio() - facturaReserva.getImporte());
+        }
+        
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
+
+
+
 
 
     public Optional<Contrato> obtenerContratoPorId(long id){
@@ -116,5 +156,6 @@ public class ContratoService {
 
         return true;
     }
+
 
 }
