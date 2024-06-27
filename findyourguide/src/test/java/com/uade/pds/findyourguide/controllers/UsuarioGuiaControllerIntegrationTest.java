@@ -5,7 +5,6 @@ import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.enums.TipoServicio;
-import com.uade.pds.findyourguide.model.ServicioGuia;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class UsuarioGuiaControllerIntegrationTest {
     @LocalServerPort
     private int port;
+
     @Autowired
     private TestRestTemplate restTemplate;
 
     private static HttpHeaders headers;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @BeforeAll

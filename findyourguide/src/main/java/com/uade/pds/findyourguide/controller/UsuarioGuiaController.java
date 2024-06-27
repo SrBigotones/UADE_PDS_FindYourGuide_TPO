@@ -2,8 +2,6 @@ package com.uade.pds.findyourguide.controller;
 
 import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
-import com.uade.pds.findyourguide.enums.Idioma;
-import com.uade.pds.findyourguide.enums.TipoServicio;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
@@ -16,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,25 +40,24 @@ public class UsuarioGuiaController {
         return ResponseEntity.ok(guiaToDTO(usuarioGuia.get()));
     }
     @GetMapping("/buscarAll")
-    public ResponseEntity<List<GuiaDTO>> buscarGuia(@RequestParam(required = false) String pais,
-                                                    @RequestParam(required = false) String ciudad,
-                                                    @RequestParam(required = false) String nombre,
-                                                    @RequestParam(required = false) String apellido,
-                                                    @RequestParam(required = false) List<TipoServicio> servicios,
-                                                    @RequestParam(required = false) List<Idioma> idiomas,
-                                                    @RequestParam(required = false) Integer puntuacion){
+    public ResponseEntity<List<GuiaDTO>> buscarGuia(){
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
 
-        List<UsuarioGuia> listaUsuariosGuia = usuarioGuiaService.buscarGuiasFiltradas(nombre, apellido, ciudad, pais, servicios, idiomas, puntuacion);
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
 
-        List<GuiaDTO> listaGuiaDTO = new ArrayList<>();
-        for (UsuarioGuia usuarioGuia: listaUsuariosGuia
-             ) {
-            GuiaDTO guiaDTO = guiaToDTO(usuarioGuia);
-            listaGuiaDTO.add(guiaDTO);
-        }
-
-        return ResponseEntity.ok(listaGuiaDTO);
+        return ResponseEntity.ok(dtos);
     }
+
+    @PostMapping("/buscarAll/filtro")
+    public ResponseEntity<List<GuiaDTO>> buscarGuiaFiltro(@RequestBody GuiaDTO guiaDTO){
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
 
     @PutMapping("/actualizar")
     public void actualizar(GuiaDTO guiaDTO) {
@@ -93,9 +89,24 @@ public class UsuarioGuiaController {
     }
 
 
+    private UsuarioGuia dtoToUsuario(GuiaDTO dto){
+        UsuarioGuia usuarioGuia = new UsuarioGuia();
+
+        usuarioGuia.setIdiomas(dto.getIdiomas());
+        usuarioGuia.setPuntuacion(dto.getPuntuacion());
+        usuarioGuia.setNombre(dto.getNombre());
+        usuarioGuia.setApellido(dto.getApellido());
+
+
+        return usuarioGuia;
+
+    }
+
+
     private ServicioGuiaDTO servicioToDTO(ServicioGuia servicioGuia){
         ServicioGuiaDTO  servicioGuiaDTO = new ServicioGuiaDTO();
 
+        servicioGuiaDTO.setId(servicioGuia.getId());
         servicioGuiaDTO.setNombre(servicioGuia.getNombre());
         servicioGuiaDTO.setPrecio(servicioGuia.getPrecio());
         servicioGuiaDTO.setTipoServicio(servicioGuia.getTipoServicio());

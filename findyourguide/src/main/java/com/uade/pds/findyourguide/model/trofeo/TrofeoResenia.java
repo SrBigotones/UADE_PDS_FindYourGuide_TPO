@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TrofeoResenia extends CondicionTrofeo{
 
-
-
     @Override
     public void serNotificado(IObservable observable) {
         Resenia resenia = (Resenia) observable;

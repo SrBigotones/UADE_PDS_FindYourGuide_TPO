@@ -5,28 +5,16 @@ import com.uade.pds.findyourguide.enums.EstadoFactura;
 import com.uade.pds.findyourguide.enums.MetodoNotificacion;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
-import com.uade.pds.findyourguide.model.contrato.state.StateContratoAceptado;
-import com.uade.pds.findyourguide.model.contrato.state.StateContratoCancelado;
-import com.uade.pds.findyourguide.model.contrato.state.StateContratoReserva;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.repository.ContratoRepository;
-import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
-import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
-import com.uade.pds.findyourguide.repository.UsuarioRepository;
 import com.uade.pds.findyourguide.service.notificacion.NotificacionService;
-import org.hibernate.Session;
-import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ContratoService {
@@ -40,8 +28,6 @@ public class ContratoService {
     private static final int PORCENTAJE_RESERVA = 40;
 
     public Contrato contratar(Contrato contrato) throws Exception{
-
-
         ServicioGuia servicioGuia = usuarioGuiaService.obtenerServicioPorId(contrato.getServicio().getId()).get();
         Usuario usuario = usuarioService.findUserById(contrato.getUsuarioContratante().getId()).get();
         UsuarioGuia usuarioGuia = usuarioGuiaService.buscarUsuarioGuia(contrato.getUsuarioContratado().getId()).get();
@@ -130,6 +116,12 @@ public class ContratoService {
 
     public List<Contrato> obtenerContratoPorServicioYGuia(ServicioGuia servicioGuia,Usuario usuarioContratante) {
         return contratoRepository.findContratoesByUsuarioContratanteAndAndServicioAndEstadoContrato(usuarioContratante,servicioGuia,EstadoContrato.CONCLUIDO);
+    }
+
+    public List<Contrato> obtenerContratosPorGuia(Usuario usuario) {
+        UsuarioGuia usuarioGuia = new UsuarioGuia();
+        usuarioGuia.setId(usuario.getId());
+        return contratoRepository.findContratosByUsuarioContratado(usuarioGuia);
     }
 
     private Contrato findContrato(Contrato contrato){
