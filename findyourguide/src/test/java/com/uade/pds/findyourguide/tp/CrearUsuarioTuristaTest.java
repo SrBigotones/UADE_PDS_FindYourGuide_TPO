@@ -1,7 +1,6 @@
 package com.uade.pds.findyourguide.tp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.uade.pds.findyourguide.TestHelper;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.service.UsuarioService;

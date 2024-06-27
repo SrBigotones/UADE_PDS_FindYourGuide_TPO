@@ -1,5 +1,6 @@
 package com.uade.pds.findyourguide.service;
 
+import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.enums.EstadoUsuario;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
@@ -7,6 +8,9 @@ import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
 import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +46,13 @@ public class UsuarioGuiaService {
         usuarioGuiaRepository.saveAll(usuarios);
     }
 
+
+    public List<UsuarioGuia> buscarGuiasPorFiltro(UsuarioGuia usuarioGuia){
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny().withIgnoreNullValues();
+
+        return usuarioGuiaRepository.findAll(Example.of(usuarioGuia, matcher));
+    }
     public void registrarImgCredencial(Usuario usuario, String imgUrl) {
         UsuarioGuia usuarioGuia = usuarioGuiaRepository.findById(usuario.getId()).get();
         usuarioGuia.setImgCredencial(imgUrl);
@@ -49,4 +60,7 @@ public class UsuarioGuiaService {
         usuarioGuiaRepository.save(usuarioGuia);
     }
 
+    public List<UsuarioGuia> buscarTodos() {
+        return usuarioGuiaRepository.findAll();
+    }
 }

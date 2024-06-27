@@ -64,13 +64,11 @@ public class ReseniaController {
 
 
     @PostMapping(value = "/publicar")
-    public ResponseEntity escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
+    public ResponseEntity<ReseniaDTO> escribirResenia(@RequestBody ReseniaDTO reseniaDTO, Authentication authentication){
         // Nos genera la reseña
         Resenia reseniaRecibida = toResenia(reseniaDTO);
 
-
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
-
 
         if (!reseniasService.yaHizoResenia(usuario,reseniaRecibida.getServicioContratado())) {
             ServicioGuia servicioGuia =usuarioGuiaService.obtenerServicioPorId(reseniaDTO.getServicioContratado().getId()).get();
@@ -83,7 +81,6 @@ public class ReseniaController {
                 return new ResponseEntity("No se puede realizar la reseña ya que no se contrato el servicio o no fue concluido.", HttpStatus.FORBIDDEN);
             }else{
                 Resenia reseniaSaved = reseniasService.escribirResenia(reseniaRecibida);
-                System.out.println(reseniaSaved.getUsuarioGuia());
                 ReseniaDTO reseniaDTO1 = this.toDTO(reseniaSaved);
                 return ResponseEntity.ok(reseniaDTO1);
             }
@@ -111,6 +108,7 @@ public class ReseniaController {
 
     private UsuarioDTO usuarioToDTO(Usuario usuario){
         UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setId(usuario.getId());
         usuarioDTO.setEmail(usuario.getEmail());
 
         return usuarioDTO;

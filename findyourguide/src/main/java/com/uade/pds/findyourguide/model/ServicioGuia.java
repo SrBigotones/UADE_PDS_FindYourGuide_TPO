@@ -23,6 +23,8 @@ public class ServicioGuia {
     @Column
     private Long cupo;
 
+    @ManyToOne
+    private CiudadPais ciudadPais;
 
     @Column
     private long guia_id;

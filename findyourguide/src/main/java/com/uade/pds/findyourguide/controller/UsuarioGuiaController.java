@@ -1,6 +1,5 @@
 package com.uade.pds.findyourguide.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.model.ServicioGuia;
@@ -13,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,9 +40,24 @@ public class UsuarioGuiaController {
         return ResponseEntity.ok(guiaToDTO(usuarioGuia.get()));
     }
     @GetMapping("/buscarAll")
-    public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
-        return null;
+    public ResponseEntity<List<GuiaDTO>> buscarGuia(){
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
+
+        return ResponseEntity.ok(dtos);
     }
+
+    @PostMapping("/buscarAll/filtro")
+    public ResponseEntity<List<GuiaDTO>> buscarGuiaFiltro(@RequestBody GuiaDTO guiaDTO){
+//        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarGuiasPorFiltro(this.dtoToUsuario(guiaDTO)).stream().map(this::guiaToDTO).toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
 
     @PutMapping("/actualizar")
     public void actualizar(GuiaDTO guiaDTO) {
@@ -79,9 +89,24 @@ public class UsuarioGuiaController {
     }
 
 
+    private UsuarioGuia dtoToUsuario(GuiaDTO dto){
+        UsuarioGuia usuarioGuia = new UsuarioGuia();
+
+        usuarioGuia.setIdiomas(dto.getIdiomas());
+        usuarioGuia.setPuntuacion(dto.getPuntuacion());
+        usuarioGuia.setNombre(dto.getNombre());
+        usuarioGuia.setApellido(dto.getApellido());
+
+
+        return usuarioGuia;
+
+    }
+
+
     private ServicioGuiaDTO servicioToDTO(ServicioGuia servicioGuia){
         ServicioGuiaDTO  servicioGuiaDTO = new ServicioGuiaDTO();
 
+        servicioGuiaDTO.setId(servicioGuia.getId());
         servicioGuiaDTO.setNombre(servicioGuia.getNombre());
         servicioGuiaDTO.setPrecio(servicioGuia.getPrecio());
         servicioGuiaDTO.setTipoServicio(servicioGuia.getTipoServicio());
