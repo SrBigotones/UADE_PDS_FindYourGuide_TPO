@@ -181,6 +181,7 @@ public class ContratoController {
         contratoDTO.setServicio(this.servicioGuiaToDTO(contrato.getServicio()));
 
 
+
         if(contrato.getChat() != null){
             contratoDTO.setChat(this.chatToDTO(contrato.getChat()));
         }
@@ -204,6 +205,14 @@ public class ContratoController {
         servicioGuiaDTO.setNombre(servicioGuia.getNombre());
         servicioGuiaDTO.setDescripcion(servicioGuia.getDescripcion());
         servicioGuiaDTO.setPrecio(servicioGuia.getPrecio());
+
+        CiudadPaisDTO ciudadPaisDTO = new CiudadPaisDTO();
+        ciudadPaisDTO.setId(servicioGuia.getCiudadPais().getId());
+        ciudadPaisDTO.setCiudad(servicioGuia.getCiudadPais().getCiudad());
+        ciudadPaisDTO.setPais(servicioGuia.getCiudadPais().getPais());
+
+        servicioGuiaDTO.setCiudadPais(ciudadPaisDTO);
+
 
         return servicioGuiaDTO;
     }

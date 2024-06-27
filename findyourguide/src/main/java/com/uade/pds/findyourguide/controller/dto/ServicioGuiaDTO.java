@@ -13,5 +13,6 @@ public class ServicioGuiaDTO {
     private String nombre;
     private String descripcion;
     private TipoServicio tipoServicio;
+    private CiudadPaisDTO ciudadPais;
 }
 
