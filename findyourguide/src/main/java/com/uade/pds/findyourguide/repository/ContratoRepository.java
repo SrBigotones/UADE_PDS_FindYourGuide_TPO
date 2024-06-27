@@ -20,6 +20,7 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
 
     List<Contrato> findContratoByServicioAndFechaIniIsGreaterThanEqualAndFechaFinIsLessThanEqual(ServicioGuia servicioGuia, LocalDate fechaIni, LocalDate fechaFin);
 
+    List<Contrato> findContratoByFechaIniIsGreaterThanEqualAndFechaFinIsLessThanEqual(LocalDate fechaIni, LocalDate fechaFin);
     List<Contrato> findContratosByFechaFinAndEstadoContrato(LocalDate fechaFin, EstadoContrato estadoContrato);
 
     List<Contrato> findContratoesByUsuarioContratanteAndAndServicioAndEstadoContrato(Usuario usuarioContratante,ServicioGuia servicioGuia,EstadoContrato estadoContrato);
