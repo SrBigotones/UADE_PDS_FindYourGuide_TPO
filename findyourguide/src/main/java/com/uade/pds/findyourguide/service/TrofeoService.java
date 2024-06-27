@@ -92,21 +92,17 @@ public class TrofeoService{
     public Trofeo ganoTrofeosResenias(Usuario usuario) {
         List<Resenia> listaResenias = reseniasService.obtenerReseniasDeUsuario(usuario);
         Trofeo trofeoOtorgado = new Trofeo();
-        Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo a la reseña");
-
-
+        Optional<TipoTrofeo> trofeo = tipoTrofeoRepository.findByNombreTrofeo("Trofeo a la resenia");
         boolean ganoElTrofeo = trofeoRepository.findByTrofeoOtorgadoAndUsuarioGanador(trofeo.get(),usuario).isPresent();
 
         if (!ganoElTrofeo){
         if (listaResenias.size() >= RESENIAS_CONSTANTE) {
-            if (trofeo.isPresent()){
-                trofeoOtorgado.setUsuarioGanador(usuario);
-                trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
-                trofeoRepository.save(trofeoOtorgado);
-                this.enviarNotificacionAUsuario(usuario, "Usted gano el trofeo a la reseña! Felicitaciones!");
-                System.out.println("Se otorga trofeo a la reseña");
-                return  trofeoOtorgado;
-            }
+            trofeoOtorgado.setUsuarioGanador(usuario);
+            trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
+            trofeoRepository.save(trofeoOtorgado);
+            this.enviarNotificacionAUsuario(usuario, "Usted gano el trofeo a la reseña! Felicitaciones!");
+            System.out.println("Se otorga trofeo a la reseña");
+            return  trofeoOtorgado;
         }
         }
         trofeoOtorgado = null;

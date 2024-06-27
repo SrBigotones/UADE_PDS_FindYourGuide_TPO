@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/UADE_PDS_FindYourGuide_TPO.iml" filepath="$PROJECT_DIR$/.idea/UADE_PDS_FindYourGuide_TPO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/findyourguide.main.iml" filepath="$PROJECT_DIR$/.idea/modules/findyourguide.main.iml" />
     </modules>
   </component>
 </project>
