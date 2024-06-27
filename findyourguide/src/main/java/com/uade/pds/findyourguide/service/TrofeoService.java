@@ -2,6 +2,7 @@ package com.uade.pds.findyourguide.service;
 
 
 import com.uade.pds.findyourguide.controller.dto.TrofeoDTO;
+import com.uade.pds.findyourguide.enums.MetodoNotificacion;
 import com.uade.pds.findyourguide.model.Notificacion;
 import com.uade.pds.findyourguide.model.Resenia;
 import com.uade.pds.findyourguide.model.trofeo.TipoTrofeo;
@@ -111,7 +112,7 @@ public class TrofeoService{
 
 
     private void enviarNotificacionAUsuario(Usuario usuario, String mensaje){
-        notificacionService.enviarNotificacion(usuario, mensaje);
+        notificacionService.enviarNotificacion(usuario, mensaje, MetodoNotificacion.PUSH);
     }
 
 

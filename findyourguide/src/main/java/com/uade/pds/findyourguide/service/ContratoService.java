@@ -2,6 +2,7 @@ package com.uade.pds.findyourguide.service;
 
 import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.enums.EstadoFactura;
+import com.uade.pds.findyourguide.enums.MetodoNotificacion;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.contrato.state.StateContratoAceptado;
@@ -49,7 +50,7 @@ public class ContratoService {
         contrato.setUsuarioContratado(usuarioGuia);
         contrato.setServicio(servicioGuia);
 
-        notificacionService.enviarNotificacion(usuarioGuia, "Se realizo una nueva reserva para el servicio " + contrato.getServicio().getNombre());
+        notificacionService.enviarNotificacion(usuarioGuia, "Se realizo una nueva reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
 
         if(this.checkDisponibilidad(contrato)){
             Contrato saved = contratoRepository.save(contrato);
@@ -76,7 +77,7 @@ public class ContratoService {
         facturaService.generarFactura(contrato, "Confirmada la reserva", importe);
 
 
-        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se confirmo el contrato para el servicio " + contrato.getServicio().getNombre());
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se confirmo el contrato para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
 
@@ -94,7 +95,7 @@ public class ContratoService {
             facturaService.revocar(facturaReserva);
         }
 
-        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre());
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
 
@@ -110,7 +111,7 @@ public class ContratoService {
             facturaService.generarFactura(contrato, "Se cancela un contrato ya aceptado y durante la fecha del viaje, se procede a cobrar la totalidad del servicio", contrato.getServicio().getPrecio() - facturaReserva.getImporte());
         }
         
-        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre());
+        notificacionService.enviarNotificacion(contrato.getUsuarioContratante(), "Se cancelo su reserva para el servicio " + contrato.getServicio().getNombre(), MetodoNotificacion.PUSH);
         return contratoRepository.save(contrato);
     }
 
