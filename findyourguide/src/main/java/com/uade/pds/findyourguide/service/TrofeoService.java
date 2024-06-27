@@ -31,6 +31,9 @@ public class TrofeoService{
     @Autowired private NotificacionService notificacionService;
 
 
+    private final int RESENIAS_CONSTANTE = 1;
+
+
 
 
     public Trofeo otorgarTrofeo(Usuario usuarioGanador, String nombreTrofeo) {
@@ -63,7 +66,7 @@ public class TrofeoService{
         boolean ganoElTrofeo = trofeoRepository.findByTrofeoOtorgadoAndUsuarioGanador(trofeo.get(),usuario).isPresent();
 
         if (!ganoElTrofeo){
-        if (listaResenias.size() >= 1) {
+        if (listaResenias.size() >= RESENIAS_CONSTANTE) {
             OptionalDouble promedioResenias = listaResenias.stream().mapToDouble(resenia -> resenia.getCalificacion()).average();
             if (promedioResenias.isPresent() && promedioResenias.getAsDouble() >= 4.5) {
                 if (trofeo.isPresent()){
@@ -95,7 +98,7 @@ public class TrofeoService{
         boolean ganoElTrofeo = trofeoRepository.findByTrofeoOtorgadoAndUsuarioGanador(trofeo.get(),usuario).isPresent();
 
         if (!ganoElTrofeo){
-        if (listaResenias.size() >= 1) {
+        if (listaResenias.size() >= RESENIAS_CONSTANTE) {
             if (trofeo.isPresent()){
                 trofeoOtorgado.setUsuarioGanador(usuario);
                 trofeoOtorgado.setTrofeoOtorgado(trofeo.get());
