@@ -1,11 +1,9 @@
 package com.uade.pds.findyourguide.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uade.pds.findyourguide.controller.dto.ContratoDTO;
-import com.uade.pds.findyourguide.controller.dto.OperacionContratoDTO;
-import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
-import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
+import com.uade.pds.findyourguide.controller.dto.*;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
+import com.uade.pds.findyourguide.model.Chat;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.contrato.Contrato;
 import com.uade.pds.findyourguide.model.user.Usuario;
@@ -174,6 +172,11 @@ public class ContratoController {
         contratoDTO.setUsuarioGuia(this.usuarioToDTO(contrato.getUsuarioContratado()));
         contratoDTO.setServicio(this.servicioGuiaToDTO(contrato.getServicio()));
 
+
+        if(contrato.getChat() != null){
+            contratoDTO.setChat(this.chatToDTO(contrato.getChat()));
+        }
+
         return contratoDTO;
     }
 
@@ -194,6 +197,14 @@ public class ContratoController {
         servicioGuiaDTO.setPrecio(servicioGuia.getPrecio());
 
         return servicioGuiaDTO;
+    }
+
+    private ChatDTO chatToDTO(Chat chat){
+        ChatDTO chatDTO = new ChatDTO();
+        chatDTO.setId(chatDTO.getId());
+        chatDTO.setCanalSendBird(chat.getCanalSendBird());
+
+        return  chatDTO;
     }
 
 }
