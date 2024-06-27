@@ -1,4 +1,4 @@
-package com.uade.pds.findyourguide;
+package com.uade.pds.findyourguide.tp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,14 +6,6 @@ import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.client.HttpMessageConverterExtractor;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class TestHelper {
     private static TestHelper instance;

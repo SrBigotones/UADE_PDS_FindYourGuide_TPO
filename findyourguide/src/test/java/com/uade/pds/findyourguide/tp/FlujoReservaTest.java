@@ -1,7 +1,6 @@
 package com.uade.pds.findyourguide.tp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.uade.pds.findyourguide.TestHelper;
 import com.uade.pds.findyourguide.controller.dto.*;
 import com.uade.pds.findyourguide.enums.EstadoContrato;
 import com.uade.pds.findyourguide.enums.EstadoFactura;
@@ -67,6 +66,12 @@ public class FlujoReservaTest {
         abonarFactura(idFactura);
 
         dejarResenia();
+
+        //Verificar trofeos
+        verificarTrofeoAlExito();
+        verificarTrofeoAResenia();
+
+
     }
 
     private List<GuiaDTO> buscarGuias() throws JsonProcessingException {
@@ -188,6 +193,31 @@ public class FlujoReservaTest {
         assertEquals(reseniaDTO.getComentario(), resenia.getComentario());
         assertEquals(1, resenia.getUsuarioGuia().getId());
 
+    }
+
+
+    void verificarTrofeoAlExito() throws JsonProcessingException {
+        TestHelper testHelper = TestHelper.getInstance(restTemplate, port);
+        ResponseEntity<List<TrofeoDTO>> response = testHelper.sendRequest("/trofeo/1", HttpMethod.GET, null, new ParameterizedTypeReference<List<TrofeoDTO>>() {});
+
+        List<TrofeoDTO> listTrofeo = response.getBody();
+
+
+        assert listTrofeo.size() > 0;
+        System.out.println(listTrofeo.get(0).getTrofeoOtorgado());
+        assert listTrofeo.get(0).getTrofeoOtorgado().getNombreTrofeo().equals("Trofeo al Exito");
+    }
+
+    void verificarTrofeoAResenia() throws JsonProcessingException {
+        TestHelper testHelper = TestHelper.getInstance(restTemplate, port);
+        ResponseEntity<List<TrofeoDTO>> response = testHelper.sendRequest("/trofeo/2", HttpMethod.GET, null, new ParameterizedTypeReference<List<TrofeoDTO>>() {});
+
+        List<TrofeoDTO> listTrofeo = response.getBody();
+
+
+        assert listTrofeo.size() > 0;
+        System.out.println(listTrofeo.get(0).getTrofeoOtorgado());
+        assert listTrofeo.get(0).getTrofeoOtorgado().getNombreTrofeo().equals("Trofeo a la resenia");
     }
 }
 

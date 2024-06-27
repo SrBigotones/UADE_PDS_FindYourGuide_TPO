@@ -1,7 +1,6 @@
 package com.uade.pds.findyourguide.tp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.uade.pds.findyourguide.TestHelper;
 import com.uade.pds.findyourguide.controller.dto.UsuarioDTO;
 import com.uade.pds.findyourguide.enums.EstadoUsuario;
 import com.uade.pds.findyourguide.enums.Idioma;
@@ -44,6 +43,7 @@ public class CrearUsuarioGuiaTest {
     @Test
     public void registar_usuario_guia() throws JsonProcessingException {
         TestHelper testHelper = TestHelper.getInstance(restTemplate, port);
+
 
         long idUsuario = crearUsuarioGuia();
 
