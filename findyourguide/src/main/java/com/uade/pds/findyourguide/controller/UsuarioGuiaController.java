@@ -1,8 +1,9 @@
 package com.uade.pds.findyourguide.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
+import com.uade.pds.findyourguide.enums.Idioma;
+import com.uade.pds.findyourguide.enums.TipoServicio;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
 import com.uade.pds.findyourguide.model.user.UsuarioGuia;
@@ -13,15 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,8 +43,19 @@ public class UsuarioGuiaController {
         return ResponseEntity.ok(guiaToDTO(usuarioGuia.get()));
     }
     @GetMapping("/buscarAll")
-    public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
-        List<UsuarioGuia> listaUsuariosGuia = usuarioGuiaService.buscarTodosLosGuias();
+    public ResponseEntity<List<GuiaDTO>> buscarGuia(@RequestParam(required = false) String pais,
+                                                    @RequestParam(required = false) String ciudad,
+                                                    @RequestParam(required = false) String nombre,
+                                                    @RequestParam(required = false) String apellido,
+                                                    @RequestParam(required = false) List<TipoServicio> servicios,
+                                                    @RequestParam(required = false, defaultValue = "0") int puntuacion,
+                                                    @RequestParam(required = false) List<Idioma> idiomas){
+        List<UsuarioGuia> listaUsuariosGuia = new ArrayList<>();
+        if((ciudad == null) && (pais == null) && (idiomas == null) && (servicios == null) && (puntuacion == 0) && (nombre == null) && (apellido == null)) {
+            listaUsuariosGuia = usuarioGuiaService.buscarTodosLosGuias();
+        } else {
+            listaUsuariosGuia =  usuarioGuiaService.buscarGuiasFiltradas(ciudad, pais, nombre, apellido, idiomas, servicios, puntuacion);
+        }
 
         if (listaUsuariosGuia.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
