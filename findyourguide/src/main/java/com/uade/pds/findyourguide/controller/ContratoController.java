@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController // o @Controller
 @RequestMapping("/contrato")
@@ -28,7 +29,7 @@ public class ContratoController {
 
 
     @PostMapping
-    public ResponseEntity contratar(@RequestBody ContratoDTO contratoDTO, Authentication authentication){
+    public ResponseEntity<ContratoDTO> contratar(@RequestBody ContratoDTO contratoDTO, Authentication authentication) {
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
         Contrato contrato = this.dtoToContrato(contratoDTO);
         contrato.setUsuarioContratante(usuario);
@@ -40,9 +41,8 @@ public class ContratoController {
             ContratoDTO contratoDTO1 = this.contratoToDTO(contratoSaved);
             return ResponseEntity.ok(contratoDTO1);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
     }
 
 
@@ -69,7 +69,7 @@ public class ContratoController {
     }
 
     @PostMapping("/{contratoId}/confirmar")
-    public ResponseEntity confirmarContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
+    public ResponseEntity<ContratoDTO> confirmarContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
         Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
 
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
@@ -83,7 +83,7 @@ public class ContratoController {
     }
 
     @PostMapping("/{contratoId}/concluir")
-    public ResponseEntity concluirContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
+    public ResponseEntity<ContratoDTO> concluirContrato(@PathVariable long contratoId, Authentication authentication) throws Exception {
         Contrato contrato = contratoService.obtenerContratoPorId(contratoId).get();
 
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
@@ -101,6 +101,14 @@ public class ContratoController {
         ContratoDTO contratoDTO = this.contratoToDTO(contratoService.obtenerContratoPorId(id).get());
 
         return ResponseEntity.ok(contratoDTO);
+    }
+
+    @GetMapping("/guia")
+    public ResponseEntity<List<ContratoDTO>> obtenerContratosDeGuia(Authentication authentication) {
+        Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
+        List<Contrato> contratos = contratoService.obtenerContratosPorGuia(usuario);
+
+        return ResponseEntity.ok(contratos.stream().map(this::contratoToDTO).toList());
     }
 
     private void verificarPermisoUsuarioContrante(Contrato contrato, Usuario usuario) throws Exception{
@@ -163,7 +171,7 @@ public class ContratoController {
 
     private ContratoDTO contratoToDTO(Contrato contrato){
         ContratoDTO contratoDTO = new ContratoDTO();
-        contratoDTO.setIdContrato(contratoDTO.getIdContrato());
+        contratoDTO.setIdContrato(contrato.getId());
         contratoDTO.setFechaIni(contrato.getFechaIni().toString());
         contratoDTO.setFechaFin(contrato.getFechaFin().toString());
         contratoDTO.setEstado(contrato.getEstadoContrato());
@@ -183,6 +191,7 @@ public class ContratoController {
     private UsuarioDTO usuarioToDTO(Usuario usuario){
 
         UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setId(usuario.getId());
         usuarioDTO.setEmail(usuario.getEmail());
 
         return usuarioDTO;

@@ -1,5 +1,6 @@
 package com.uade.pds.findyourguide.service;
 
+import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.enums.EstadoUsuario;
 import com.uade.pds.findyourguide.model.ServicioGuia;
 import com.uade.pds.findyourguide.model.user.Usuario;
@@ -7,6 +8,7 @@ import com.uade.pds.findyourguide.model.user.UsuarioGuia;
 import com.uade.pds.findyourguide.repository.ServicioGuiaRepository;
 import com.uade.pds.findyourguide.repository.UsuarioGuiaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,4 +51,7 @@ public class UsuarioGuiaService {
         usuarioGuiaRepository.save(usuarioGuia);
     }
 
+    public List<UsuarioGuia> buscarTodos() {
+        return usuarioGuiaRepository.findAll();
+    }
 }

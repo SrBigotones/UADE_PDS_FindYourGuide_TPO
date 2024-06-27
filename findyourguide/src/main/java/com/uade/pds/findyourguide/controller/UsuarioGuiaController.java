@@ -1,6 +1,5 @@
 package com.uade.pds.findyourguide.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uade.pds.findyourguide.controller.dto.GuiaDTO;
 import com.uade.pds.findyourguide.controller.dto.ServicioGuiaDTO;
 import com.uade.pds.findyourguide.model.ServicioGuia;
@@ -13,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,7 +41,8 @@ public class UsuarioGuiaController {
     }
     @GetMapping("/buscarAll")
     public ResponseEntity<List<GuiaDTO>> buscarGuia(GuiaDTO guiaDTO){
-        return null;
+        List<GuiaDTO> dtos = usuarioGuiaService.buscarTodos().stream().map(this::guiaToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @PutMapping("/actualizar")
@@ -82,6 +78,7 @@ public class UsuarioGuiaController {
     private ServicioGuiaDTO servicioToDTO(ServicioGuia servicioGuia){
         ServicioGuiaDTO  servicioGuiaDTO = new ServicioGuiaDTO();
 
+        servicioGuiaDTO.setId(servicioGuia.getId());
         servicioGuiaDTO.setNombre(servicioGuia.getNombre());
         servicioGuiaDTO.setPrecio(servicioGuia.getPrecio());
         servicioGuiaDTO.setTipoServicio(servicioGuia.getTipoServicio());

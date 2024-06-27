@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/factura")
 public class FacturaController {
@@ -28,8 +30,9 @@ public class FacturaController {
         this.validarPermisoFactura(factura, usuario);
         return ResponseEntity.ok(this.FacturaToDTO(factura));
     }
+
     @GetMapping()
-    public ResponseEntity obtenerTodasFacturas(Authentication authentication) throws Exception {
+    public ResponseEntity<List<FacturaDTO>> obtenerTodasFacturas(Authentication authentication) throws Exception {
 
         Usuario usuario = ((CustomUserDetails) authentication.getPrincipal()).getUsuario();
 
